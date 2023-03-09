@@ -32,6 +32,7 @@
   align-items: center;
   justify-content: center;
   color: bisque;
+  margin-left: -5%;
 
 }
 
@@ -44,7 +45,7 @@
   display: flex;
   float: right;
   margin: auto;
-  width: 80%;
+  width: 100%;
   height: 100%;
   align-items: center;
   justify-content: center;
@@ -295,7 +296,6 @@
 }
 
 
-
 .nurture{
   position: relative;
   display: flex;
@@ -312,8 +312,9 @@
 
 .nurture-01{
   width: 30%;
-  border: 20px solid white;
-  margin: 35px;
+  border: 15px solid white;
+  margin: absolute;
+  float: left;
 }
 
 
@@ -322,40 +323,38 @@
   width: 30%;
   color: white;
   display: flex;
-  margin: auto;
+  margin-left: auto;
   align-items: center;
   justify-content: center;
   text-align: center;
-  font-size: 2em;
-  padding-right: 520px;
+  font-size: 1.5em;
 
 }
 
 .nurture-03{
 
   width: 30%;
-  border: 20px solid white;
-  margin: 35px;  
-  height: 32vh;  
+  border: 15px solid white;
+  margin: auto;
+  float: left  
 
 }
 .nurture-03 img{
   
-  position: relative;
+  position: right;
   width: 100%;
-  height: 19rem;
+  height: 27rem;
+  object-fit: cover;
 }
 
 
 .nurture-01 img{
-  position: relative;
-  width: 80%;
-  height: 30rem;
-
+  position: left;
+  width: 100%;
+  height: 27rem;
+  object-fit: cover;
   
 }
-
-
 
 
 .headquarter{
@@ -451,5 +450,3 @@
   margin-top: 40px;
   margin-left: -2.97%;
 }
-
-

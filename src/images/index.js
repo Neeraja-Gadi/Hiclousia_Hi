@@ -6,5 +6,6 @@ import asian2 from "./asian2.jpg"
 import map from "./map.jpg"
 import iitmrs from "./iitmrs.jpg"
 import iitmgate from "./iitmgate.jpg"
+import avatar from "./avatar.jpg"
 
-export { mainimg , third , second , asian1 , asian2 , map , iitmrs , iitmgate}
+export { mainimg , third , second , asian1 , asian2 , map , iitmrs , iitmgate ,avatar}

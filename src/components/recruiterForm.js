@@ -3,9 +3,7 @@ import {location} from "../arrays.js"
 
 function Drop() {
 
-
     // const [tc, setTc] = useState(false)
-
     const [recruiterData, setRecruiterData] = useState({
         fname: "",
         lname: "",

@@ -1,0 +1,373 @@
+// import React,{useState , useEffect} from 'react';
+// import { withStyles, makeStyles } from '@material-ui/core/styles';
+// import Table from '@material-ui/core/Table';
+// import TableBody from '@material-ui/core/TableBody';
+// import TableCell from '@material-ui/core/TableCell';
+// import TableContainer from '@material-ui/core/TableContainer';
+// import TableHead from '@material-ui/core/TableHead';
+// import TableRow from '@material-ui/core/TableRow';
+// import Paper from '@material-ui/core/Paper';
+
+// const StyledTableCell = withStyles((theme) => ({
+//   head: {
+//     backgroundColor: theme.palette.common.black,
+//     color: theme.palette.common.white,
+//   },
+//   body: {
+//     fontSize: 14,
+//   },
+// }))(TableCell);
+
+// const StyledTableRow = withStyles((theme) => ({
+//   root: {
+//     '&:nth-of-type(odd)': {
+//       backgroundColor: theme.palette.action.hover,
+//     },
+//   },
+// }))(TableRow);
+
+// function ProductSearch() {
+//   const [query, setQuery] = useState('');
+//   const [products, setProducts] = useState([]);
+  
+//   useEffect(() => {
+
+//     fetch('http://localhost:8000/job?jobRole=software')
+//       .then(response => response.json())
+//       .then(data => setProducts(data.data))
+//       .catch(err=> console.log(err));
+//        console.log(products);
+//   }, []);
+
+//   const HandleSearch = async (event) => {
+//     event.preventDefault();
+ 
+//   }
+
+
+// const useStyles = makeStyles({
+//   table: {
+//     minWidth: 700,
+//   },
+// });
+
+// const classes = useStyles();
+
+//   return (
+//     <TableContainer component={Paper}>
+//       <Table className={classes.table} aria-label="customized table">
+//         <TableHead>
+//           <TableRow>
+//             <StyledTableCell>Job Role</StyledTableCell>
+//             <StyledTableCell align="right">Experience</StyledTableCell>
+//             <StyledTableCell align="right">PrimarySkills&nbsp;(g)</StyledTableCell>
+//             <StyledTableCell align="right">SecondarySkills&nbsp;(g)</StyledTableCell>
+//             <StyledTableCell align="right">Education</StyledTableCell>
+//             <StyledTableCell align="right">JobDiscription&nbsp;(g)</StyledTableCell>
+//             <StyledTableCell align="right">Location</StyledTableCell>
+//             <StyledTableCell align="right">Salary</StyledTableCell>
+
+
+//           </TableRow>
+//         </TableHead>
+//         <TableBody>
+//           {products?.map((product ,index)  => (
+//             <StyledTableRow key={product.name}>
+//               <StyledTableCell component="th" scope="row">
+//                 {product.name}
+//               </StyledTableCell>
+//               <StyledTableCell align="right">{product.jobRole}</StyledTableCell>
+//               <StyledTableCell align="right">{product.education}</StyledTableCell>
+//               <StyledTableCell align="right">{product.primarySkills}</StyledTableCell>
+//               <StyledTableCell align="right">{product.secondarySkills}</StyledTableCell>
+//               <StyledTableCell align="right">{product.location}</StyledTableCell>
+//               <StyledTableCell align="right">{product.salary }</StyledTableCell>
+
+//             </StyledTableRow>
+//            ))} 
+//         </TableBody>
+//       </Table>
+//     </TableContainer>
+//   );
+// }
+
+
+// export default ProductSearch
+
+
+
+
+
+
+
+
+
+
+// ******************** working ***************
+
+import React, { useState , useEffect} from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import {Box,Button} from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
+import Container from '@material-ui/core/Container';
+import Grid from '@material-ui/core/Grid';
+import CssBaseline from '@material-ui/core/CssBaseline';
+
+const useStyles = makeStyles((theme) => ({
+  
+  root: {
+    flexGrow: 1,
+    background: 'linear-gradient(45deg, #09C6F9 30%, #045DE9 90%)',
+    border: 0,
+    borderRadius: 5,
+    boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .3)',
+    color: 'white',
+    height: 150,
+    marginBottom : "30px" ,
+    padding: '0 30px',
+  },
+  container: {
+    paddingTop: theme.spacing(3),
+    paddingBottom: theme.spacing(3),
+    // backgroundColor: theme.palette.info.main,
+    color: theme.palette.primary.main
+
+  },
+
+}));
+
+function ProductSearch() {
+  const [query, setQuery] = useState('');
+  const [products, setProducts] = useState([]);
+  
+  useEffect(() => {
+
+    fetch('http://localhost:8000/job?jobRole=software')
+      .then(response => response.json())
+      .then(data => setProducts(data.data))
+      .catch(err=> console.log(err));
+       console.log(products);
+  }, []);
+
+  const HandleSearch = async (event) => {
+    event.preventDefault();
+ 
+  }
+  const classes = useStyles();
+
+  return (
+    <div classNmae = "Search">
+      <h1>SEARCHBOX Results</h1>
+      <form onSubmit={HandleSearch}>
+        <input type="text" value={query} onChange={(e) => setQuery(e.target.value)} />
+        <button type="submit">Search</button>
+      </form>
+      
+      <Container maxWidth="xs" >
+      <CssBaseline>
+      <Grid container spacing={1}>
+        <Grid item xs={12}>
+          <Typography textAlign="center" variant="h4" gutterBottom>
+            Jobs Matched
+          </Typography>
+        </Grid>
+        {products.map((product ,index)  => (
+          <Grid item xs={8} sm={8} key={index} className={classes.root}>
+            <Typography variant="subtitle1" textAlign="center" gutterBottom >
+            JobRole :{product.jobRole}
+            </Typography>
+            <Typography variant="subtitle1" gutterBottom >
+            Experience  :{product.experience}
+            </Typography>
+            <Typography variant="subtitle1" gutterBottom >
+            Location: {product.location}
+            </Typography>
+          </Grid>
+        ))}
+      </Grid>
+      </CssBaseline>
+    </Container>
+   
+    
+    </div>
+  );
+
+
+}
+
+export default ProductSearch ;
+
+// import React, { useState } from "react";
+// import "../styles/Search.css";
+// import SearchIcon from "@material-ui/icons/Search";
+// import CloseIcon from "@material-ui/icons/Close";
+
+// function SearchBar({ placeholder, data }) {
+//   const [filteredData, setFilteredData] = useState([]);
+//   const [wordEntered, setWordEntered] = useState("");
+
+//   const handleFilter = (event) => {
+//     const searchWord = event.target.value;
+//     event.preventDefault()
+//     setWordEntered(searchWord);
+//     const newFilter = data.filter((value) => {
+//       return value.title.toLowerCase().includes(searchWord.toLowerCase());
+//     });
+
+//     if (searchWord === "") {
+//       setFilteredData([]);
+//     } else {
+//       setFilteredData(newFilter);
+//     }
+//   };
+
+//   const clearInput = () => {
+//     setFilteredData([]);
+//     setWordEntered("");
+//   };
+
+//   return (
+//     <div className="search">
+//       <div className="searchInputs">
+//         <input
+//           type="text"
+//           placeholder={placeholder}
+//           value={wordEntered}
+//           onChange={handleFilter}
+//         />
+//         <div className="searchIcon">
+//           {filteredData.length === 0 ? (
+//             <SearchIcon />
+//           ) : (
+//             <CloseIcon id="clearBtn" onClick={clearInput} />
+//           )}
+//         </div>
+//       </div>
+//       {filteredData.length != 0 && (
+//         <div className="dataResult">
+//           {filteredData.slice(0, 15).map((value, key) => {
+//             return (
+//               <a className="dataItem" href={value.link} target="_blank">
+//                 <p>{value.title} </p>
+//               </a>
+//             );
+//           })}
+//         </div>
+//       )}
+//     </div>
+//   );
+// }
+
+// export default SearchBar;
+
+// import React, { useState, useEffect } from 'react';
+
+// function ProductSearch() {
+//   const [filterdata, setFilterdata] = useState([]);
+//   const [searchword , setSearchword ] = useState('')
+
+
+//   useEffect(() => {
+//     fetch('http://localhost:8000/job')
+//       .then(response => response.json())
+//       .then(data => setFilterdata(data.data))
+//       .catch(err=> console.log(err));
+//        console.log(filterdata);
+//   }, []);
+//   const handleSearch = async (event) => {
+//         event.preventDefault();
+//         const response = await axios.get(`/api/products?q=${query}`); // send search request to backend server
+//         setProducts(response.data); // update the products state with the search results
+//       };
+//   return (
+
+//     <div>
+//     <form onSubmit={handleSearch}>
+//       <input type="text" value={query} onChange={(e) => setQuery(e.target.value)} />
+//       <button type="submit">Search</button>
+//     </form>
+//     <ul>
+//       {products.map((product) => (
+//         <li key={product._id}>{product.name}</li>
+//       ))}
+//     </ul>
+//   </div>
+    
+//     // <div>
+//     //   {data.map(item => (
+//     //     <div key={item.id}>
+//     //       <h2>{item.title}</h2>
+//     //       <p>{item.description}</p>
+//     //     </div>
+//     //   ))}
+//     // </div>
+//   );
+// }
+// // ProductSearch
+// export default {App};
+
+
+
+
+
+// import React, { useState } from 'react';
+
+// function SearchJobs() {
+//   const [jobResults, setJobResults] = useState([]);
+//   const [jobRole, setJobRole] = useState('');
+//   const [experience, setExperience] = useState('');
+//   const [primarySkills, setPrimarySkills] = useState('');
+//   const [secondarySkills, setSecondarySkills] = useState('');
+//   const [jobDescription, setJobDescription] = useState('');
+//   const [education, setEducation] = useState('');
+//   const [location, setLocation] = useState('');
+
+//   const handleFormSubmit = (event) => {
+//     event.preventDefault();
+
+//     // Make API call to get job results
+//     fetch(`/api/jobs?jobRole=${jobRole}&experience=${experience}&primarySkills=${primarySkills}&secondarySkills=${secondarySkills}&jobDescription=${jobDescription}&education=${education}&location=${location}`)
+//       .then(response => response.json())
+//       .then(data => {
+//         setJobResults(data);
+//       })
+//       .catch(error => {
+//         console.error(error);
+//         setJobResults([]);
+//       });
+//   };
+
+//   return (
+//     <div>
+//       <h1>Search for Jobs</h1>
+//       <form onSubmit={handleFormSubmit}>
+//         <input type="text" placeholder="Job Role" value={jobRole} onChange={(event) => setJobRole(event.target.value)} />
+//         <input type="text" placeholder="Experience" value={experience} onChange={(event) => setExperience(event.target.value)} />
+//         <input type="text" placeholder="Primary Skills" value={primarySkills} onChange={(event) => setPrimarySkills(event.target.value)} />
+//         <input type="text" placeholder="Secondary Skills" value={secondarySkills} onChange={(event) => setSecondarySkills(event.target.value)} />
+//         <input type="text" placeholder="Job Description" value={jobDescription} onChange={(event) => setJobDescription(event.target.value)} />
+//         <input type="text" placeholder="Education" value={education} onChange={(event) => setEducation(event.target.value)} />
+//         <input type="text" placeholder="Location" value={location} onChange={(event) => setLocation(event.target.value)} />
+//         <button type="submit">Search</button>
+//       </form>
+//       <div>
+//         {jobResults.length > 0 ? (
+//           <ul>
+//             {jobResults.map((job) => (
+//               <li key={job.id}>
+//                 <h2>{job.title}</h2>
+//                 <p>{job.description}</p>
+//                 <p>Location: {job.location}</p>
+//               </li>
+//             ))}
+//           </ul>
+//         ) : (
+//           <p>No jobs found.</p>
+//         )}
+//       </div>
+//     </div>
+//   );
+// }
+
+// export default SearchJobs;

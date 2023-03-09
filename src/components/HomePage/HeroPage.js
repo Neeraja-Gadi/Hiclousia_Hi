@@ -23,6 +23,9 @@ function logOut(){
         <div className="logo">
           <h1>H<span>i</span></h1>
         </div>
+        <div className="search">
+          
+        </div>
         <div className="menu">
           <ul>
             <li><a href="#talent">Talent Profile</a></li>

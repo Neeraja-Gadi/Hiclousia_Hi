@@ -10,7 +10,9 @@ body{
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #4070f4;
+    /* background: #4070f4; */
+    /* background: radial-gradient(circle at -3.3% 48%, rgb(141, 146, 239) 0%, rgb(99, 229, 254) 90%); */
+    background: linear-gradient(-225deg, #5D9FFF 0%, #B8DCFF 48%, #6BBBFF 100%);
 }
 .container{
     position: relative;
