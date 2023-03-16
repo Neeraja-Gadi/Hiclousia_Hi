@@ -1,30 +1,37 @@
-// import React,{useState , useEffect} from 'react';
-// import { withStyles, makeStyles } from '@material-ui/core/styles';
-// import Table from '@material-ui/core/Table';
-// import TableBody from '@material-ui/core/TableBody';
-// import TableCell from '@material-ui/core/TableCell';
-// import TableContainer from '@material-ui/core/TableContainer';
-// import TableHead from '@material-ui/core/TableHead';
-// import TableRow from '@material-ui/core/TableRow';
-// import Paper from '@material-ui/core/Paper';
+import React,{useState , useEffect} from 'react';
+import { withStyles, makeStyles } from '@material-ui/core/styles';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Paper from '@material-ui/core/Paper';
+import {TextField, Typography} from '@material-ui/core'
 
-// const StyledTableCell = withStyles((theme) => ({
-//   head: {
-//     backgroundColor: theme.palette.common.black,
-//     color: theme.palette.common.white,
-//   },
-//   body: {
-//     fontSize: 14,
-//   },
-// }))(TableCell);
+const StyledTableCell = withStyles((theme) => ({
+  head: {
+    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.common.white,
+  },
+  body: {
+    fontSize: 24,
+  },
+}))(TableCell);
 
-// const StyledTableRow = withStyles((theme) => ({
-//   root: {
-//     '&:nth-of-type(odd)': {
-//       backgroundColor: theme.palette.action.hover,
-//     },
-//   },
-// }))(TableRow);
+const StyledTableRow = withStyles((theme) => ({
+  root: {
+    '&:nth-of-type(odd)': {
+      backgroundColor: theme.palette.info.main
+    },
+  },
+}))(TableRow);
+
+const useStyles = makeStyles({
+  table: {
+    minWidth: 700,
+  },
+});
 
 // function ProductSearch() {
 //   const [query, setQuery] = useState('');
@@ -44,55 +51,81 @@
  
 //   }
 
+function ProductSearch() {
+  const [query, setQuery] = useState('');
+  const [products, setProducts] = useState([]);
+  
+ const searchRes = function (){
 
-// const useStyles = makeStyles({
-//   table: {
-//     minWidth: 700,
-//   },
-// });
+  fetch(`http://localhost:8000/job?jobRole=${query}`)
+  .then(response => response.json()
+  .then(data => {setProducts(data.data)
+  console.log(data)
+  })
+  .catch(err=> console.log(err)));
+   console.log(products);
 
-// const classes = useStyles();
+ }
+  const HandleSearch = async (event) => {
+    
+    searchRes()
+    event.preventDefault();
+   
+  }
+ const classes = useStyles();
 
-//   return (
-//     <TableContainer component={Paper}>
-//       <Table className={classes.table} aria-label="customized table">
-//         <TableHead>
-//           <TableRow>
-//             <StyledTableCell>Job Role</StyledTableCell>
-//             <StyledTableCell align="right">Experience</StyledTableCell>
-//             <StyledTableCell align="right">PrimarySkills&nbsp;(g)</StyledTableCell>
-//             <StyledTableCell align="right">SecondarySkills&nbsp;(g)</StyledTableCell>
-//             <StyledTableCell align="right">Education</StyledTableCell>
-//             <StyledTableCell align="right">JobDiscription&nbsp;(g)</StyledTableCell>
-//             <StyledTableCell align="right">Location</StyledTableCell>
-//             <StyledTableCell align="right">Salary</StyledTableCell>
+  return (
+    <div classNmae = "Search">
 
+          <form onSubmit={HandleSearch}>
+          <Typography textAlign="center" variant="h6" gutterBottom>
+          Search ... 
+      </Typography>
+          <TextField id="outlined-basic"
+           variant="outlined" 
+           value={query} onChange={(e) => setQuery(e.target.value)} />
+            {/* <input type="text" value={query} onChange={(e) => setQuery(e.target.value)} /> */}
+            <button type="submit">Search</button>
+          </form>
+    <TableContainer component={Paper}>
+      <Table className={classes.table} aria-label="customized table">
+        <TableHead>
+          <TableRow>
+            <StyledTableCell align="right">Job Role</StyledTableCell>
+            <StyledTableCell align="right">PrimarySkills</StyledTableCell>
+            <StyledTableCell align="right">SecondarySkills</StyledTableCell>
+            <StyledTableCell align="right">Experience</StyledTableCell>
+            <StyledTableCell align="right">Education</StyledTableCell>
+            {/* <StyledTableCell align="right">JobDescription</StyledTableCell> */}
+            <StyledTableCell align="right">Location</StyledTableCell>
+            <StyledTableCell align="right">Salary</StyledTableCell>
 
-//           </TableRow>
-//         </TableHead>
-//         <TableBody>
-//           {products?.map((product ,index)  => (
-//             <StyledTableRow key={product.name}>
-//               <StyledTableCell component="th" scope="row">
-//                 {product.name}
-//               </StyledTableCell>
-//               <StyledTableCell align="right">{product.jobRole}</StyledTableCell>
-//               <StyledTableCell align="right">{product.education}</StyledTableCell>
-//               <StyledTableCell align="right">{product.primarySkills}</StyledTableCell>
-//               <StyledTableCell align="right">{product.secondarySkills}</StyledTableCell>
-//               <StyledTableCell align="right">{product.location}</StyledTableCell>
-//               <StyledTableCell align="right">{product.salary }</StyledTableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {products?.map((product ,index)  => (
+            <StyledTableRow key={product.name}>
+              {/* <StyledTableCell component="th" scope="row">
+                {product.name}
+              </StyledTableCell> */}
+              <StyledTableCell align="right">{product.jobRole}</StyledTableCell>
+              <StyledTableCell align="right">{product.primarySkills}</StyledTableCell>
+              <StyledTableCell align="right">{product.secondarySkills}</StyledTableCell>
+              <StyledTableCell align="right">{product.experience}</StyledTableCell>
+              <StyledTableCell align="right">{product.education}</StyledTableCell>
+              <StyledTableCell align="right">{product.location}</StyledTableCell>
+              <StyledTableCell align="right">{product.salary }</StyledTableCell>
 
-//             </StyledTableRow>
-//            ))} 
-//         </TableBody>
-//       </Table>
-//     </TableContainer>
-//   );
-// }
+            </StyledTableRow>
+           ))} 
+        </TableBody>
+      </Table>
+    </TableContainer>
+    </div>
+  );
+}
 
-
-// export default ProductSearch
+export default ProductSearch
 
 
 
@@ -105,98 +138,105 @@
 
 // ******************** working ***************
 
-import React, { useState , useEffect} from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import {Box,Button} from '@material-ui/core';
-import Typography from '@material-ui/core/Typography';
-import Container from '@material-ui/core/Container';
-import Grid from '@material-ui/core/Grid';
-import CssBaseline from '@material-ui/core/CssBaseline';
+// import React, { useState , useEffect} from 'react';
+// import { makeStyles } from '@material-ui/core/styles';
+// import TextField from '@material-ui/core/TextField';
+// import {Box,Button} from '@material-ui/core';
+// import Typography from '@material-ui/core/Typography';
+// import Container from '@material-ui/core/Container';
+// import Grid from '@material-ui/core/Grid';
+// import CssBaseline from '@material-ui/core/CssBaseline';
 
-const useStyles = makeStyles((theme) => ({
+// const useStyles = makeStyles((theme) => ({
   
-  root: {
-    flexGrow: 1,
-    background: 'linear-gradient(45deg, #09C6F9 30%, #045DE9 90%)',
-    border: 0,
-    borderRadius: 5,
-    boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .3)',
-    color: 'white',
-    height: 150,
-    marginBottom : "30px" ,
-    padding: '0 30px',
-  },
-  container: {
-    paddingTop: theme.spacing(3),
-    paddingBottom: theme.spacing(3),
-    // backgroundColor: theme.palette.info.main,
-    color: theme.palette.primary.main
+//   root: {
+//     flexGrow: 1,
+//     background: 'linear-gradient(45deg, #09C6F9 30%, #045DE9 90%)',
+//     border: 0,
+//     borderRadius: 5,
+//     boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .3)',
+//     color: '#784bff',
+//     height: 150,
+//     marginBottom : "30px" ,
+//     padding: '0 30px',
+//   },
+//   container: {
+//     paddingTop: theme.spacing(3),
+//     paddingBottom: theme.spacing(3),
+//     // backgroundColor: theme.palette.info.main,
+//     color: theme.palette.primary.main
 
-  },
+//   },
 
-}));
+// }));
 
-function ProductSearch() {
-  const [query, setQuery] = useState('');
-  const [products, setProducts] = useState([]);
+// function ProductSearch() {
+//   const [query, setQuery] = useState('');
+//   const [products, setProducts] = useState([]);
   
-  useEffect(() => {
+//  const searchRes = function (){
 
-    fetch('http://localhost:8000/job?jobRole=software')
-      .then(response => response.json())
-      .then(data => setProducts(data.data))
-      .catch(err=> console.log(err));
-       console.log(products);
-  }, []);
 
-  const HandleSearch = async (event) => {
-    event.preventDefault();
- 
-  }
-  const classes = useStyles();
+  
 
-  return (
-    <div classNmae = "Search">
-      <h1>SEARCHBOX Results</h1>
-      <form onSubmit={HandleSearch}>
-        <input type="text" value={query} onChange={(e) => setQuery(e.target.value)} />
-        <button type="submit">Search</button>
-      </form>
+//   fetch(`http://localhost:8000/job?jobRole=${query}`)
+//   .then(response => response.json()
+//   .then(data => {setProducts(data.data)
+//   console.log(data)
+//   })
+//   .catch(err=> console.log(err)));
+//    console.log(products);
+
+//  }
+//   const HandleSearch = async (event) => {
+    
+//     searchRes()
+//     event.preventDefault();
+   
+//   }
+//   const classes = useStyles();
+
+//   return (
+//     <div classNmae = "Search">
+//       <h1>SEARCHBOX Results</h1>
+//       <form onSubmit={HandleSearch}>
+//         <input type="text" value={query} onChange={(e) => setQuery(e.target.value)} />
+//         <button type="submit">Search</button>
+//       </form>
       
-      <Container maxWidth="xs" >
-      <CssBaseline>
-      <Grid container spacing={1}>
-        <Grid item xs={12}>
-          <Typography textAlign="center" variant="h4" gutterBottom>
-            Jobs Matched
-          </Typography>
-        </Grid>
-        {products.map((product ,index)  => (
-          <Grid item xs={8} sm={8} key={index} className={classes.root}>
-            <Typography variant="subtitle1" textAlign="center" gutterBottom >
-            JobRole :{product.jobRole}
-            </Typography>
-            <Typography variant="subtitle1" gutterBottom >
-            Experience  :{product.experience}
-            </Typography>
-            <Typography variant="subtitle1" gutterBottom >
-            Location: {product.location}
-            </Typography>
-          </Grid>
-        ))}
-      </Grid>
-      </CssBaseline>
-    </Container>
+//       <Container maxWidth="xs" >
+//       <CssBaseline>
+//       <Grid container spacing={1}>
+//         <Grid item xs={12}>
+//           <Typography textAlign="center" variant="h4" gutterBottom>
+//             Jobs Matched
+//           </Typography>
+//         </Grid>
+//         {products.map((product ,index)  => (
+//           <Grid item xs={8} sm={8} key={index} className={classes.root}>
+//             <Typography variant="subtitle1" textAlign="center" gutterBottom >
+//             JobRole :{product.jobRole}
+//             </Typography>
+//             <Typography variant="subtitle1" gutterBottom >
+//             Experience  :{product.experience}
+//             </Typography>
+//             <Typography variant="subtitle1" gutterBottom >
+//             Location: {product.location}
+//             </Typography>
+//           </Grid>
+//         ))}
+//       </Grid>
+//       </CssBaseline>
+//     </Container>
    
     
-    </div>
-  );
+//     </div>
+//   );
 
 
-}
+// }
 
-export default ProductSearch ;
+// export default ProductSearch ;
 
 // import React, { useState } from "react";
 // import "../styles/Search.css";

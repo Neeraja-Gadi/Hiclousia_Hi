@@ -28,8 +28,8 @@ const EducationForm = () => {
     );
     setEducationList(updatedList);
   };
-  const handleSubmit =async (event) => {
-    
+
+  const handleSubmit =async (event) => { 
     event.preventDefault();
     SaveEducation()
     navigate("/multiform8")
