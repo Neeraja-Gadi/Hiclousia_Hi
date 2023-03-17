@@ -3,7 +3,7 @@ const Joi = require('joi');
 
 const jobInfo = async (req, res) =>{
     try {
-        const { userDetailsID, jobRole, experience, primarySkill, secondarySkills, jobDiscription, location, company, education, sector} = req.body;
+        const { userDetailsID, jobRole, experience, primarySkill, secondarySkills, jobDiscription, location, company, education, salary, sector} = req.body;
         const jobSchema = Joi.object({
             userDetailsID: Joi.string().required(),
             jobRole: Joi.string().required(),
@@ -14,8 +14,13 @@ const jobInfo = async (req, res) =>{
             salary: Joi.string().required(),
             location: Joi.string().required(),
             company: Joi.string().required(),
-            education: Joi.string().required(),
-            sector: Joi.string().required()
+            sector: Joi.string().required(),
+            education: Joi.array().items(
+              Joi.object({
+                  authority: Joi.string().required(),
+                  educationLevel: Joi.string().required(),
+              })
+            ).required(),
         });
         const validationResult = jobSchema.validate(req.body, { abortEarly: false });
         if (validationResult.error) {
@@ -41,7 +46,12 @@ const updateJobData = async function(req, res){
           salary: Joi.string(),
           location: Joi.string(),
           company: Joi.string(),
-          education: Joi.string(),
+          education: Joi.array().items(
+            Joi.object({
+                authority: Joi.string().required(),
+                educationLevel: Joi.string().required()
+            })
+        ).required(),
           sector: Joi.string(),
       });
       const validationResult = jobSchema.validate(req.body, { abortEarly: false });
@@ -60,14 +70,13 @@ const updateJobData = async function(req, res){
           jobData.secondarySkills = req.body.secondarySkills;
           jobData.jobDiscription = req.body.jobDiscription;
           jobData.salary = req.body.salary;
-          jobData.location = req.body.location;
+          jobData.location = req.body.locajotion;
           jobData.company = req.body.company;
           jobData.education= req.body.education;
           jobData.sector= req.body.sector;
           jobData.experience=req.body.experience;
           jobData.jobRole=req.body.jobRole;
 
-      
       const updatedData = await jobModel.findByIdAndUpdate({_id: id}, jobData, {new:true});
       return res.status(200).send({ status: true, data: updatedData, message: 'Job data updated' });
       // 
@@ -136,3 +145,5 @@ const searchJobs = async (req, res) => {
 };
 
 module.exports = { jobInfo,  searchJobs, updateJobData };
+
+

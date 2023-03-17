@@ -149,7 +149,7 @@ const projectInfo = async function (req, res) {
         const projectSchema = Joi.object({
 
             userDetailsID: Joi.string().required(),
-            projectName: Joi.string().required(),
+            projectTitle: Joi.string().required(),
             startDate: Joi.date().required(),
             endDate: Joi.date().required(),
             typeOfjobs: Joi.string().required(),
