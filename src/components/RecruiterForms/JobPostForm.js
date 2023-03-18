@@ -133,20 +133,24 @@
 // export default JobPostForm;
 
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Button, Typography, Select, MenuItem, Grid, IconButton,TextField } from '@material-ui/core';
-import { Add, Remove, AddCircleOutline, RemoveCircleOutline } from '@material-ui/icons';
+import { Button, Typography, Select, MenuItem, Grid, IconButton, TextField } from '@material-ui/core';
+import { Add, Remove, AddCircleOutline, RemoveCircleOutline, AlarmRounded } from '@material-ui/icons';
 import { location, jobRole, primarySkills, secondarySkills } from '../../constraints/arrays';
-import {Box,FormControl,InputLabel} from "@material-ui/core";
+import { Box, FormControl, InputLabel } from "@material-ui/core";
 import CssBaseline from '@material-ui/core/CssBaseline';
+import { useNavigate } from "react-router-dom";
+
+
+
 const useStyles = makeStyles((theme) => ({
     root: {
         '& .MuiTextField-root': {
             margin: theme.spacing(2),
             paddingTop: theme.spacing(1),
             paddingLeft: theme.spacing(1),
-            paddingBottom : theme.spacing(3),
+            paddingBottom: theme.spacing(3),
             [theme.breakpoints.down('sm')]: {
                 //  backgroundColor: theme.palette.info.main 
             },
@@ -171,21 +175,35 @@ const useStyles = makeStyles((theme) => ({
         margin: theme.spacing(5),
 
     },
+    formControl: {
+        width: '100%',
+        marginBottom: theme.spacing(2),
+        marginRight: theme.spacing(3),
+        // paddingBottom: theme.spacing(3)
+
+    },
 }));
 
 const userId = JSON.parse(localStorage.getItem("userDetails"))
-// console.log(userId)
+
 const JobForm = () => {
+    const navigation = useNavigate();
+    useEffect(() => {
+        
+        if (userId == null) {navigation("/login")
+        alert("Please login first")
+}
+    }, [])
     const classes = useStyles();
     const [jobData, setJobData] = useState([
         {
-            userDetailsID: userId._id,
+            userDetailsID: userId?userId._id:null,
             jobRole: "",
             jobDescription: "",
             experience: "",
             primarySkills: "",
             secondarySkills: "",
-            education: "",
+            education: [],
             location: "",
             salary: "",
         },
@@ -201,7 +219,7 @@ const JobForm = () => {
                 experience: "",
                 primarySkills: "",
                 secondarySkills: "",
-                education: "",
+                education: [],
                 location: "",
                 salary: "",
             },
@@ -210,7 +228,7 @@ const JobForm = () => {
 
     const handleRemoveJob = (index) => {
         const newJobs = [...jobData];
-        newJobs.splice(index, 1);
+        newJobs.splice(index-1, 1);
         setJobData(newJobs);
     };
 
@@ -223,29 +241,40 @@ const JobForm = () => {
         };
         setJobData(newJobs);
     };
-    function SaveJob() {
-        // console.log(jobData)
-        console.log(jobData)
-        jobData.map((e, index) => {
-            console.log("gfggf",e)
-        fetch("http://localhost:8000/job", {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(e)
 
-        }).then(response => response.json().then(data => console.log(data)))
-    })
+    // const handleEduChange = (index, field, value) => {
+    //     const educations = [...formData.workExperience];
+    //        educations[index][field] = value;
+    //                       setFormData({...formData, education: educations });
+    //   };
+      
+    //   const handleInputChange2 = (e, index) => {
+    //     const {name, value} = e.target;
+    //     const [field, propertyIndex] = name.split(".");
+    //     handleExperienceChange(index, field, value);
+    //   }
+    function SaveJob() {
+
+        jobData.map((e, index) => {
+
+            fetch("http://localhost:8000/job", {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(e)
+
+            }).then(response => response.json().then(data => console.log(data)))
+        })
 
     }
     function handlesubmitEvent(e) {
         // if (!jobData.jobRole || !jobData.jobDescription || !jobData.experience || !jobData.secondarySkills || !jobData.primarySkills || !jobData.education) alert("Please fill all the fields'")
         // else {
-            // console.log(jobData)
-            e.preventDefault()
-            SaveJob()
+        // console.log(jobData)
+        e.preventDefault()
+        SaveJob()
         // }
     };
 
@@ -285,8 +314,8 @@ const JobForm = () => {
                         required
                     />
                     <TextField
-                    
-                        label ="Primary Skills"
+
+                        label="Primary Skills"
                         name="primarySkills"
                         value={job.primarySkills}
                         onChange={(event) => handleJobChange(event, index)}
@@ -295,7 +324,7 @@ const JobForm = () => {
                         required
                     />
                     <TextField
-                        label = "Secondary Skills"
+                        label="Secondary Skills"
                         name="secondarySkills"
                         value={job.secondarySkills}
                         onChange={(event) => handleJobChange(event, index)}
@@ -303,15 +332,47 @@ const JobForm = () => {
                         fullWidth
                         required
                     />
-                    <TextField
-                        name="education"
-                        label="Education"
-                        value={job.education}
-                        onChange={(event) => handleJobChange(event, index)}
+
+                    <Typography variant="h6" gutterBottom>
+                        Education Qualification
+                    </Typography>
+                    <Box className={classes.formControl}>
+                        {jobData.education.map((education, index) => (
+                            <Box key={index}>
+                                <TextField
+                                    label="Authority"
+                                    name={`education[${index}].authority`}
+                                    value={education.authority}
+                                    onChange={(event) => handleJobChange(event, index)}
+                                    variant="outlined"
+                                    required
+                                />
+                                <TextField
+                                    label="education Level"
+                                    name={`education[${index}].educationLevel`}
+                                    value={education.educationLevel}
+                                    onChange={(event) => handleJobChange(event, index)}
+                                    variant="outlined"
+                                    required
+                                />
+                            </Box>
+
+                        ))}
+                    </Box>
+                    <Button
                         variant="outlined"
-                        fullWidth
-                        required
-                    />
+                        onClick={() =>
+                            setJobData({
+                                ...jobData,
+                                education: [
+                                    ...jobData.education,
+                                    { authority: '', educationLevel: '' }
+                                ]
+                            })
+                        }
+                    >
+                        Add Education Qualifications
+                    </Button>
                     <TextField
                         label="Job Location"
                         name="location"
@@ -322,7 +383,7 @@ const JobForm = () => {
                         required
                     />
                     <TextField
-                        label = "Salary"
+                        label="Salary"
                         name="salary"
                         value={job.salary}
                         onChange={(event) => handleJobChange(event, index)}
@@ -330,7 +391,7 @@ const JobForm = () => {
                         fullWidth
                         required
                     />
-                    
+
                     {index === jobData?.length - 1 &&
                         <Button
                             className={classes.addButton}

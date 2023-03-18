@@ -31,13 +31,13 @@ function App() {
                 </>} />
                 <Route path ="login" element={<Login />}/>
                 {/* <Route path ="multiform6" element={<JobForm />}/> */}
-                <Route path ="multiform1" element={<UserProfile/>}/>
-                <Route path= "multiform2" element={ <EducationForm/>}/>
-                <Route path= "multiform3" element={ <ExperienceForm/>}/>
+                <Route path ="UserProfile" element={<UserProfile/>}/>
+                <Route path= "EducationForm" element={ <EducationForm/>}/>
+                <Route path= "ExperienceForm" element={ <ExperienceForm/>}/>
                 
-                <Route path= "multiform5" element={ <ProductSearch/>}/>
-                <Route path= "multiform6" element ={<RecruiterProfileForm/>}/>
-                <Route path=  "multiform7" element = {<JobPostForm/>}/>
+                <Route path= "ProductSearch" element={ <ProductSearch/>}/>
+                <Route path= "RecruiterProfileForm" element ={<RecruiterProfileForm/>}/>
+                <Route path=  "JobPostForm" element = {<JobPostForm/>}/>
                 {/* <Route path=  "multiform7" element = {<Form/>}/> */}
             </Routes>
            

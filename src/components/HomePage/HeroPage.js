@@ -29,7 +29,7 @@ function logOut(){
         <div className="menu">
           <ul>
             <li><a href="#talent">Talent Profile</a></li>
-            <li><a href="#recruiter">Recruiter</a></li>
+            <li><a href="/RecruiterProfileForm">Recruiter</a></li>
             <li><a href="#about">About Us</a></li>
             <li><a href="#contact">Contact Us </a></li>
             {

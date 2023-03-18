@@ -65,6 +65,7 @@ function Login() {
   const [password, setPassword] = React.useState("");
   const [firstName, setFirstName] = React.useState("");
   const [lastName, setLastName] = React.useState("");
+  const [recBox, setRecBox] = React.useState(false)
   const [result, setResult] = React.useState({ status: false, message: "" })
   const navigate = useNavigate();
   function LoginHandler(e) {
@@ -102,8 +103,9 @@ function Login() {
   }
 
   function SignUpHandler(e) {
-
-    const data = { email, password, firstName, lastName }
+    const recruiter = recBox
+    const data = { email, password, firstName, lastName,recruiter }
+    console.log(data,"dtat")
     fetch("http://localhost:8000/create", {
       method: "POST",
       headers: {
@@ -148,6 +150,12 @@ function Login() {
           <Components.Input type='text' placeholder='Last Name' value={lastName} onChange={(e) => setLastName(e.target.value)} />
           <Components.Input type='email' placeholder='Email' value={email} onChange={(e) => setEmail(e.target.value)} />
           <Components.Input type='password' placeholder='Password' value={password} onChange={(e) => setPassword(e.target.value)} />
+          <label class="container">Are you a recruiter</label>
+          <Components.Input type='checkbox' value={recBox} onChange={()=>setRecBox(!recBox)} />
+          
+  {/* <input type="checkbox" checked="checked">
+  <span class="checkmark"></span> */}
+
           {result.status ? (
             <h4 style={{ color: "green" }}>
               {result.message}
