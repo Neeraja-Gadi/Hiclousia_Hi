@@ -8,6 +8,12 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import {TextField, Typography} from '@material-ui/core'
+import Box from '@mui/material/Box';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import { Filter } from '@material-ui/icons';
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -22,7 +28,7 @@ const StyledTableCell = withStyles((theme) => ({
 const StyledTableRow = withStyles((theme) => ({
   root: {
     '&:nth-of-type(odd)': {
-      backgroundColor: theme.palette.info.main
+      backgroundColor: theme.palette.action.hover
     },
   },
 }))(TableRow);
@@ -54,13 +60,18 @@ const useStyles = makeStyles({
 function ProductSearch() {
   const [query, setQuery] = useState('');
   const [products, setProducts] = useState([]);
-  
+  const [filter, setFilter] = React.useState('');
+
+  const handleChange = (event) => {
+    setFilter(event.target.value);
+  };
  const searchRes = function (){
 
-  fetch(`http://localhost:8000/job?jobRole=${query}`)
+  fetch(`http://localhost:8000/job?${filter}=${query}`)
   .then(response => response.json()
-  .then(data => {setProducts(data.data)
-  console.log(data)
+  .then(data => {
+    setProducts(data.data)
+        
   })
   .catch(err=> console.log(err)));
    console.log(products);
@@ -75,12 +86,29 @@ function ProductSearch() {
  const classes = useStyles();
 
   return (
-    <div classNmae = "Search">
+    <div className = "Search">
 
           <form onSubmit={HandleSearch}>
           <Typography textAlign="center" variant="h6" gutterBottom>
           Search ... 
       </Typography>
+      <FormControl >
+        <InputLabel id="demo-simple-select-label">Filter</InputLabel>
+        <Select
+    labelId="demo-simple-select-label"
+    id="demo-simple-select"
+    value={filter}
+    label="Filter"
+    onChange={handleChange}
+  >
+    <MenuItem value={"jobRole"}>Job Role</MenuItem>
+    <MenuItem value={"experience"}>Experience</MenuItem>
+    <MenuItem value={"primarySkills"}>PrimarySkills</MenuItem>
+    <MenuItem value={"location"}>Location</MenuItem>
+    {/* <MenuItem value={"educationLevel"}>Education</MenuItem> */}
+     
+  </Select>
+</FormControl>
           <TextField id="outlined-basic"
            variant="outlined" 
            value={query} onChange={(e) => setQuery(e.target.value)} />
@@ -95,7 +123,9 @@ function ProductSearch() {
             <StyledTableCell align="right">PrimarySkills</StyledTableCell>
             <StyledTableCell align="right">SecondarySkills</StyledTableCell>
             <StyledTableCell align="right">Experience</StyledTableCell>
-            <StyledTableCell align="right">Education</StyledTableCell>
+            <StyledTableCell align="right">Education Level</StyledTableCell>
+
+
             {/* <StyledTableCell align="right">JobDescription</StyledTableCell> */}
             <StyledTableCell align="right">Location</StyledTableCell>
             <StyledTableCell align="right">Salary</StyledTableCell>
@@ -103,8 +133,8 @@ function ProductSearch() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {products?.map((product ,index)  => (
-            <StyledTableRow key={product.name}>
+        {products?.map((product ,index)  => (
+            <StyledTableRow key={index}>
               {/* <StyledTableCell component="th" scope="row">
                 {product.name}
               </StyledTableCell> */}
@@ -112,7 +142,7 @@ function ProductSearch() {
               <StyledTableCell align="right">{product.primarySkills}</StyledTableCell>
               <StyledTableCell align="right">{product.secondarySkills}</StyledTableCell>
               <StyledTableCell align="right">{product.experience}</StyledTableCell>
-              <StyledTableCell align="right">{product.education}</StyledTableCell>
+              <StyledTableCell align="right">{product.education.educationLevel}</StyledTableCell>
               <StyledTableCell align="right">{product.location}</StyledTableCell>
               <StyledTableCell align="right">{product.salary }</StyledTableCell>
 
@@ -300,56 +330,6 @@ export default ProductSearch
 // }
 
 // export default SearchBar;
-
-// import React, { useState, useEffect } from 'react';
-
-// function ProductSearch() {
-//   const [filterdata, setFilterdata] = useState([]);
-//   const [searchword , setSearchword ] = useState('')
-
-
-//   useEffect(() => {
-//     fetch('http://localhost:8000/job')
-//       .then(response => response.json())
-//       .then(data => setFilterdata(data.data))
-//       .catch(err=> console.log(err));
-//        console.log(filterdata);
-//   }, []);
-//   const handleSearch = async (event) => {
-//         event.preventDefault();
-//         const response = await axios.get(`/api/products?q=${query}`); // send search request to backend server
-//         setProducts(response.data); // update the products state with the search results
-//       };
-//   return (
-
-//     <div>
-//     <form onSubmit={handleSearch}>
-//       <input type="text" value={query} onChange={(e) => setQuery(e.target.value)} />
-//       <button type="submit">Search</button>
-//     </form>
-//     <ul>
-//       {products.map((product) => (
-//         <li key={product._id}>{product.name}</li>
-//       ))}
-//     </ul>
-//   </div>
-    
-//     // <div>
-//     //   {data.map(item => (
-//     //     <div key={item.id}>
-//     //       <h2>{item.title}</h2>
-//     //       <p>{item.description}</p>
-//     //     </div>
-//     //   ))}
-//     // </div>
-//   );
-// }
-// // ProductSearch
-// export default {App};
-
-
-
-
 
 // import React, { useState } from 'react';
 
