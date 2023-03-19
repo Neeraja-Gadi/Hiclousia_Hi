@@ -2,27 +2,30 @@ const mongoose = require('mongoose');
 
 const ObjectId = mongoose.Schema.Types.ObjectId;
 
-const UserSchema = new mongoose.Schema({
-    email : { type: String, required: true,},
+const userinfoSchema = new mongoose.Schema({
     
     personalDetails :{
         type : ObjectId , 
-        ref : "userPersonal"
+        ref : "user"
     },
     educationDetails : {
         type : ObjectId , 
-        ref : "userEducation"
+        ref : "education"
     },
     expereinceDetails : {
         type : ObjectId , 
-        ref : "userExperience"
+        ref : "Experience"
     },
     projectDetails : {
         type : ObjectId , 
-        ref : "userProject"
+        ref : "projects"
+    },
+    skills: {
+        type : ObjectId , 
+        ref : "Skills"
     }
 },
     { timestamps: true }
     )
     
-    module.exports = mongoose.model("userPersonal", UserSchema);
+    module.exports = mongoose.model("InfoUser", userinfoSchema);

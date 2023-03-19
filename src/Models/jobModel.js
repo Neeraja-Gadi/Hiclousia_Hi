@@ -26,19 +26,27 @@ const jobSchema = new mongoose.Schema(
     },
     jobDiscription: {
       type: String,
-      required: true
+      // required: true
     },
     salary: {
       type: String,
       required: true
     },
-    education: {
-      type: String,
-      required: true
-    },
+    education: [
+      {
+      authority: {
+        type: String,
+        required: true,
+      },
+      educationLevel: {
+        type: String,
+        required: true,
+      },
+    }
+    ],
     company: {
       type: String,
-      required: true,
+      // required: true,
     },
     location: {
       type: String,
@@ -46,7 +54,7 @@ const jobSchema = new mongoose.Schema(
     },
     sector: {
       type: String,
-      required: true,
+      // required: true,
     }
     
   },

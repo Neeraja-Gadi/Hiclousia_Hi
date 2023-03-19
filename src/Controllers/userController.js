@@ -11,7 +11,7 @@ const register = async function (req, res) {
       firstName: Joi.string().pattern(new RegExp("^[a-zA-Z]")).required(),
       lastName: Joi.string().pattern(new RegExp("^[a-zA-Z]")).required(),
       email: Joi.string().email().required(),
-      recruiter: Joi.string().required(),
+      recruiter: Joi.boolean().required(),
       password: Joi.string().min(8).max(15).required()
     });
 
@@ -27,7 +27,7 @@ const register = async function (req, res) {
       return res.status(400).send({ status: false, message: "User already exists" });
     }
 
-    const user = await userModel.create({ firstName, lastName, email, city, title, password });
+    const user = await userModel.create({ firstName, lastName, email, password,recruiter });
 
     if (user) {
       return res.status(201).send({ status: true, message: "User created successfully", data: user });
@@ -38,6 +38,7 @@ const register = async function (req, res) {
     res.status(500).send({ status: false, message: err.message });
   }
 };
+
 
 const loginUser = async function (req, res) {
   try {

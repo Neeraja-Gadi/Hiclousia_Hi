@@ -1,5 +1,5 @@
 const Student = require('../models/studentModel');
-const { Authority, Certificate, Education_Level, Experience } = require('../config/constants');
+// const { Authority, Certificate, Education_Level, Experience } = require('../config/constants');
 
 exports.git = async (req, res) => {
   try {

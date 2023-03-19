@@ -4,11 +4,12 @@ const projectsModel = require("../Models/InfoModels/projectsModel.js");
 
 const skillsModel = require("../Models/InfoModels/skillsModel.js")
 const userModel = require("../Models/userModel.js")
+const { AuthorityPoints, EducationLevelPoints } = require("../Constrains/authority.js");
 const Joi = require('joi');
 // *************************************************************************///
-const educationInfo = async function (req, res){
+const educationInfo = async function (req, res) {
     try {
-        const { userDetailsID, educationLevel, collegeName, authority, discipline, yearOfpassout} = req.body;
+        const { userDetailsID, educationLevel, collegeName, authority, discipline, yearOfpassout } = req.body;
 
         const educationSchema = Joi.object({
             userDetailsID: Joi.string().required(),
@@ -194,6 +195,7 @@ const skillsInfo = async function (req, res) {
         res.status(500).send({ status: false, message: err.message })
     }
 }
+// ************************************************************************
 const updateSkillsData = async function (req, res) {
     try {
         const skillsSchema = Joi.object({
@@ -240,12 +242,59 @@ const personalInfo = async function (req, res) {
         const data = { user, educationData, experienceData, skills }
         return res.status(200).send({ status: true, data: data })
 
-
     } catch (err) {
         res.status(500).send({ status: false, message: err.message })
     }
 }
 
+// **********************************************************************************
+const getallUsers = async function (req, res) {
+
+    try {
+
+        const allUsers = await userModel.find({ recruiter: false });
+        const userDetails = await Promise.all(allUsers.map(async (user) => {
+
+            const educationDetails = await educationModel.find({ userDetailsID: user._id });
+            // const experienceDetails = await experienceModel.find({ userDetailsID: user._id } );
+            // const skillsDetails = await skillsModel.find({ userDetailsID: user._id } );
+            // const projectDetails = await projectsModel.find({ userDetailsID: user._id } );
+            // // console.log(educationDetails)
+            let score = 0
+            for (let i = 0; i < educationDetails.length; i++) {
+                if (EducationLevelPoints[educationDetails[i].educationLevel] + AuthorityPoints[educationDetails[i].authority] > score) {
+                    score = EducationLevelPoints[educationDetails[i].educationLevel] + AuthorityPoints[educationDetails[i].authority]
+                }
+            }
+            return {
+
+                userDetails: user,
+                educationDetails,
+                PoolPoints: score
+                //   experienceDetails,
+                //   skillsDetails,
+                //   projectDetails
+            }
+
+        }));
+        let premiumPool=[],vipPool=[],normalPool=[]
+        userDetails.map((userD)=>{
+            if(userD.PoolPoints>=1700)premiumPool.push(userD)
+            else if(userD.PoolPoints>=1000)vipPool.push(userD)
+            else normalPool.push(userD)
+        })
+
+        res.json({premiumPool,vipPool,normalPool});
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ msg: error.message });
+    }
+
+}
 
 
-module.exports = { educationInfo, updateEducationData, experienceInfo, updateExperienceData, projectInfo, skillsInfo, updateSkillsData, personalInfo };
+
+
+
+
+module.exports = { educationInfo, updateEducationData, experienceInfo, updateExperienceData, projectInfo, skillsInfo, updateSkillsData, personalInfo, getallUsers };

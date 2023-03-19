@@ -2,32 +2,39 @@ const jobModel = require("../Models/jobModel");
 const Joi = require('joi');
 
 const jobInfo = async (req, res) =>{
-    try {
-        const { userDetailsID, jobRole, experience, primarySkill, secondarySkills, jobDiscription, location, company, education, sector} = req.body;
-        const jobSchema = Joi.object({
-            userDetailsID: Joi.string().required(),
-            jobRole: Joi.string().required(),
-            experience: Joi.string().required(),
-            primarySkills: Joi.string().required(),
-            secondarySkills: Joi.string().required(),
-            jobDiscription: Joi.string().required(),
-            salary: Joi.string().required(),
-            location: Joi.string().required(),
-            company: Joi.string().required(),
-            education: Joi.string().required(),
-            sector: Joi.string().required()
-        });
-        const validationResult = jobSchema.validate(req.body, { abortEarly: false });
-        if (validationResult.error) {
-            return res.status(400).send({ status: false, message: validationResult.error.details[0].message });
-        };
-        const data = await jobModel.create(req.body);
-        if (data)
-            return res.status(200).send({ status: true, data: data, message: 'Job-Post data created' });
-    } catch (err) {
-        res.status(500).send({ status: false, message: err.message });
-    }
+  try {
+      const { userDetailsID, jobRole, experience, primarySkill, secondarySkills, jobDiscription, location, company, education, salary, sector} = req.body;
+      const jobSchema = Joi.object({
+          userDetailsID: Joi.string().required(),
+          jobRole: Joi.string().required(),
+          experience: Joi.string().required(),
+          primarySkills: Joi.string().required(),
+          secondarySkills: Joi.string().required(),
+          jobDiscription: Joi.string(),
+          salary: Joi.string().required(),
+          location: Joi.string().required(),
+          company: Joi.string(),
+          sector: Joi.string(),
+          education: Joi.array().items(
+            Joi.object({
+                authority: Joi.string().required(),
+                educationLevel: Joi.string().required(),
+            })
+          ).required(),
+      });
+      const validationResult = jobSchema.validate(req.body, { abortEarly: false });
+      if (validationResult.error) {
+          return res.status(400).send({ status: false, message: validationResult.error.details[0].message });
+      };
+      const data = await jobModel.create(req.body);
+      if (data)
+          return res.status(200).send({ status: true, data: data, message: 'Job-Post data created' });
+  } catch (err) {
+      res.status(500).send({ status: false, message: err.message });
+  }
 };
+
+// **********************************************************************************************************
 const updateJobData = async function(req, res){
   try {
       const jobSchema = Joi.object({
@@ -41,7 +48,12 @@ const updateJobData = async function(req, res){
           salary: Joi.string(),
           location: Joi.string(),
           company: Joi.string(),
-          education: Joi.string(),
+          education: Joi.array().items(
+            Joi.object({
+                authority: Joi.string().required(),
+                educationLevel: Joi.string().required()
+            })
+        ).required(),
           sector: Joi.string(),
       });
       const validationResult = jobSchema.validate(req.body, { abortEarly: false });
@@ -67,7 +79,6 @@ const updateJobData = async function(req, res){
           jobData.experience=req.body.experience;
           jobData.jobRole=req.body.jobRole;
 
-      
       const updatedData = await jobModel.findByIdAndUpdate({_id: id}, jobData, {new:true});
       return res.status(200).send({ status: true, data: updatedData, message: 'Job data updated' });
       // 
