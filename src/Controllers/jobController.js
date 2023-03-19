@@ -72,7 +72,7 @@ const updateJobData = async function(req, res){
           jobData.secondarySkills = req.body.secondarySkills;
           jobData.jobDiscription = req.body.jobDiscription;
           jobData.salary = req.body.salary;
-          jobData.location = req.body.location;
+          jobData.location = req.body.locajotion;
           jobData.company = req.body.company;
           jobData.education= req.body.education;
           jobData.sector= req.body.sector;
@@ -147,3 +147,5 @@ const searchJobs = async (req, res) => {
 };
 
 module.exports = { jobInfo,  searchJobs, updateJobData };
+
+
