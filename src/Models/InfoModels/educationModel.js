@@ -10,7 +10,8 @@ const educationSchema = new mongoose.Schema(
     educationLevel:
     {
       type: String,
-      required: true
+      required: true,
+      trim : true
     },
     collegeName: {
       type: String,
@@ -19,7 +20,8 @@ const educationSchema = new mongoose.Schema(
     authority:
     {
       type: String,
-      required: true
+      required: true,
+      trim : true
     },
     discipline:
     {

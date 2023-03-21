@@ -29,7 +29,11 @@ const experienceSchema = new mongoose.Schema(
         skills: {
             type: [String],
             required: true,
-        }
+        },
+        experience: {
+            type: [String],
+      
+        },
     },
     {
         timestamps: true

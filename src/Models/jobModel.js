@@ -6,7 +6,7 @@ const jobSchema = new mongoose.Schema(
   {
     userDetailsID:{
       type: ObjectId,
-      ref: "user"
+      ref: "recruiter"
     },
     jobRole: {
       type: String,

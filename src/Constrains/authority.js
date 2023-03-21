@@ -1,14 +1,28 @@
 // Define objects
-const Authority = {
+module.exports.AuthorityPoints={
     IIT: 1000,
     IIM: 900,
-    IISc:800,
+    IISc: 800,
     NIT: 700,
-    CentralGovt: 600,
-    StateGovt: 500,
-    Deemed: 400,
+   "Central Govt": 600,
+    "State Govt": 500,
+    "Demeed University" : 400,
     Private: 300,
-};
+}
+
+module.exports.EducationLevelPoints={
+   
+    "Master of Technology":1000,
+    "Master of Business Administration":900,
+    "Bachelor of Technology":800,
+    "Master Degree":700,
+    "Bachelor Degree":600,
+    "Diploma Equavalant to Bachelor degree":500,
+    "Diploma Equavalant to Master degree":400,
+    "Online Degree":300,
+    "Advance Diploma":200, 
+    "PhD":1500
+}
 
 const Certificate = {
     SummerProgramme: 700,
@@ -35,19 +49,6 @@ const Certificate = {
     FutureLearn: 100
 };
 
-const EducationLevel = {
-    PhD: 1500,
-    MTech: 1000,
-    MBA: 900,
-    BTech: 800,
-    Master: 700,
-    Bachelor: 600,
-    DiplomaBachlor: 500,
-    DiplomaMaster: 400,
-    OnlineDegree: 300,
-    AdvanceDiploma: 200
-};
-
 const Experience = {
     "Fresher": 100,
     "1 Year": 1200,
@@ -66,9 +67,8 @@ const Experience = {
 };
 
 // Export objects
-module.exports = {
-    Authority,
-    Certificate,
-    EducationLevel,
-    Experience
-};
+// module.exports = {
+    
+//     Certificate,
+//     Experience
+// };
