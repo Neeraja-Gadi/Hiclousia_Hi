@@ -38,4 +38,4 @@ const educationSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("education", educationSchema);
+module.exports = mongoose.model("Education", educationSchema);

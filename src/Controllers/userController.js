@@ -70,6 +70,7 @@ const loginUser = async function (req, res) {
     res.status(500).send({ status: false, message: err.message });
   }
 };
+
 const userGeneral = async function (req, res) {
   try {
     const { gitLink, profileLink, gender, doB, phone } = req.body;

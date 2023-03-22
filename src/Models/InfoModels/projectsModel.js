@@ -6,7 +6,7 @@ const projectsSchema = new mongoose.Schema(
             type: ObjectId,
             ref: "user"
         },
-        projectName: {
+        projectTitle: {
             type: String,
             required: true
         },
@@ -34,4 +34,4 @@ const projectsSchema = new mongoose.Schema(
         timestamps: true
     }
 )
-module.exports = mongoose.model("projects", projectsSchema);
+module.exports = mongoose.model("Projects", projectsSchema);

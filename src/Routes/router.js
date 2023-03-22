@@ -33,9 +33,8 @@ router.put("/job/:id",jobController.updateJobData);
 router.get("/personal/:id",infoController.personalInfo);
 router.get("/job",jobController.searchJobs);
 
-router.get("/allusers/:id",userController.searchjobseekers)
-
-
+router.get("/allusers/:id",infoController.getallUsers);
+router.get("/jobseeker",recruiterController.searchJobseekerGeneral);
 
 
 

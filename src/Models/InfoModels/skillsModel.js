@@ -11,14 +11,12 @@ const skillsSchema = new mongoose.Schema(
         {
             type: String,
             required: true
-        }
-    ],
+        }],
         secondarySkills:[
         {
             type: String,
             required: true
-        }
- ]
+        }]
     },
     { timestamps: true }
 );

@@ -79,7 +79,7 @@ const updateEducationData = async function (req, res) {
 
 const experienceInfo = async function (req, res) {
     try {
-        const { userDetailsID, jobStatus, jobTitle, companyName, companyType, companyLocation, skills } = req.body;
+        const { userDetailsID, jobStatus, jobTitle, companyName, companyType, companyLocation, skills, experience } = req.body;
         const experienceSchema = Joi.object({
             userDetailsID: Joi.string().required(),
             jobStatus: Joi.string(),
@@ -87,7 +87,8 @@ const experienceInfo = async function (req, res) {
             companyName: Joi.string().required(),
             companyType: Joi.string(),
             companyLocation: Joi.string().required(),
-            skills: Joi.string().required()
+            skills: Joi.string().required(),
+            experience: Joi.string().required()
 
         });
         const validationResult = experienceSchema.validate(req.body, { abortEarly: false });
@@ -106,7 +107,7 @@ const experienceInfo = async function (req, res) {
 
 const updateExperienceData = async function (req, res) {
     try {
-        const { userDetailsID, jobStatus, jobTitle, companyName, companyType, companyLocation, skills } = req.body;
+        const { userDetailsID, jobStatus, jobTitle, experience, companyName, companyType, companyLocation, skills } = req.body;
         const experienceSchema = Joi.object({
             userDetailsID: Joi.string(),
             jobStatus: Joi.string(),
@@ -115,6 +116,7 @@ const updateExperienceData = async function (req, res) {
             companyType: Joi.string(),
             companyLocation: Joi.string(),
             skills: Joi.string(),
+            experience: Joi.string()
         });
         const validationResult = experienceSchema.validate(req.body, { abortEarly: false });
         if (validationResult.error) {
@@ -134,6 +136,7 @@ const updateExperienceData = async function (req, res) {
         experienceData.companyType = req.body.companyType;
         experienceData.companyLocation = req.body.companyLocation;
         experienceData.skills = req.body.skills;
+        experienceData.experience = req.body.experience;
 
         const updatedData = await experienceModel.findByIdAndUpdate({ _id: id }, experienceData, { new: true });
         return res.status(200).send({ status: true, data: updatedData, message: 'Experience data updated' });
@@ -153,10 +156,8 @@ const projectInfo = async function (req, res) {
             projectTitle: Joi.string().required(),
             startDate: Joi.date().required(),
             endDate: Joi.date().required(),
-            typeOfjobs: Joi.string().required(),
             organizationName: Joi.string().required(),
             description: Joi.string().required(),
-
             Url: Joi.string().required(),
         });
         const validationResult = projectSchema.validate(req.body, { abortEarly: false });
@@ -180,8 +181,8 @@ const skillsInfo = async function (req, res) {
     try {
         const skillsSchema = Joi.object({
             userDetailsID: Joi.string().required(),
-            primarySkills: Joi.string().required(),
-            secondarySkills: Joi.string().required(),
+            primarySkills: Joi.array().required(),
+            secondarySkills: Joi.array().required(),
         });
         const validationResult = skillsSchema.validate(req.body, { abortEarly: false });
         if (validationResult.error) {
@@ -247,10 +248,50 @@ const personalInfo = async function (req, res) {
     }
 }
 
-// **********************************************************************************
+/**********************************************************************************/
+const getallUsers = async function (req, res) {
+
+    try {
+
+        const allUsers = await userModel.find({ recruiter: false });
+        const userDetails = await Promise.all(allUsers.map(async (user) => {
+
+            const educationDetails = await educationModel.find({ userDetailsID: user._id });
+            // const experienceDetails = await experienceModel.find({ userDetailsID: user._id } );
+            // const skillsDetails = await skillsModel.find({ userDetailsID: user._id } );
+            // const projectDetails = await projectsModel.find({ userDetailsID: user._id } );
+            // // console.log(educationDetails)
+            let score = 0
+            for (let i = 0; i < educationDetails.length; i++) {
+                if (EducationLevelPoints[educationDetails[i].educationLevel] + AuthorityPoints[educationDetails[i].authority] > score) {
+                    score = EducationLevelPoints[educationDetails[i].educationLevel] + AuthorityPoints[educationDetails[i].authority]
+                }
+            }
+            return {
+
+                userDetails: user,
+                educationDetails,
+                PoolPoints: score
+                //   experienceDetails,
+                //   skillsDetails,
+                //   projectDetails
+            }
+
+        }));
+        let premiumPool=[],vipPool=[],normalPool=[]
+        userDetails.map((userD)=>{
+            if(userD.PoolPoints>=1700)premiumPool.push(userD)
+            else if(userD.PoolPoints>=1000)vipPool.push(userD)
+            else normalPool.push(userD)
+        })
+
+        res.json({premiumPool,vipPool,normalPool});
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ msg: error.message });
+    }
+
+}
 
 
-
-
-
-module.exports = { educationInfo, updateEducationData, experienceInfo, updateExperienceData, projectInfo, skillsInfo, updateSkillsData, personalInfo};
+module.exports = { educationInfo, updateEducationData, experienceInfo, updateExperienceData, projectInfo, skillsInfo, updateSkillsData, personalInfo, getallUsers };
