@@ -49,7 +49,7 @@ const Certificate = {
     FutureLearn: 100
 };
 
-const Experience = {
+module.exports.ExperienceLevelPoints = {
     "Fresher": 100,
     "1 Year": 1200,
     "2 Year": 2400,

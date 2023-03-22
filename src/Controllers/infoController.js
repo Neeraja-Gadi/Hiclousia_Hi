@@ -4,12 +4,11 @@ const projectsModel = require("../Models/InfoModels/projectsModel.js");
 
 const skillsModel = require("../Models/InfoModels/skillsModel.js")
 const userModel = require("../Models/userModel.js")
-const { AuthorityPoints, EducationLevelPoints } = require("../Constrains/authority.js");
+const { AuthorityPoints, EducationLevelPoints ,ExperienceLevelPoints } = require("../Constrains/authority.js");
 const Joi = require('joi');
 // *************************************************************************///
 const educationInfo = async function (req, res) {
-    try {
-        const { userDetailsID, educationLevel, collegeName, authority, discipline, yearOfpassout } = req.body;
+    try {     
 
         const educationSchema = Joi.object({
             userDetailsID: Joi.string().required(),
@@ -19,6 +18,7 @@ const educationInfo = async function (req, res) {
             discipline: Joi.string().required(),
             yearOfpassout: Joi.string().required()
         });
+
         const validationResult = educationSchema.validate(req.body, { abortEarly: false });
         if (validationResult.error) {
             return res.status(400).send({ status: false, message: validationResult.error.details[0].message });
@@ -29,15 +29,15 @@ const educationInfo = async function (req, res) {
         if (data)
             return res.status(200).send({ status: true, data: data, message: 'Education data created' });
 
-
     } catch (err) {
         res.status(500).send({ status: false, message: err.message })
     }
-}
+};
+
 // *************************************************************
 const updateEducationData = async function (req, res) {
     try {
-        const { userDetailsID, educationLevel, collegeName, authority, discipline, yearOfpassout } = req.body;
+        
         const educationSchema = Joi.object({
             userDetailsID: Joi.string(),
             educationLevel: Joi.string(),
@@ -195,7 +195,7 @@ const skillsInfo = async function (req, res) {
         res.status(500).send({ status: false, message: err.message })
     }
 }
-// ************************************************************************
+// **********************************************************************************
 const updateSkillsData = async function (req, res) {
     try {
         const skillsSchema = Joi.object({
@@ -207,6 +207,7 @@ const updateSkillsData = async function (req, res) {
         if (validationResult.error) {
             return res.status(400).send({ status: false, message: validationResult.error.details[0].message });
         };
+
         const id = req.params.id;
         let skillData = {};
         skillData = await skillsModel.findById({ _id: id });
