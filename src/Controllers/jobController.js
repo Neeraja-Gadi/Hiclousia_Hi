@@ -86,7 +86,7 @@ const updateJobData = async function(req, res){
   return res.status(500).send({ status: false, message: err.message })
 }
 }
-
+//88888888888888888888888888888888888888888888888888888888888888888888888888888
 
 const searchJobs = async (req, res) => {
   try {
@@ -106,17 +106,19 @@ const searchJobs = async (req, res) => {
     if (jobRole) {
       query.jobRole = { $regex: jobRole, $options: 'i' };
     }
-
     if (experience) {
-      query.experience = { $regex: experience, $options: 'i' };
+      const experienceArray = experience.split(",");
+      query.experience = {$in: experienceArray.map(experience => new RegExp(experience.trim(), 'i')) };
     }
 
     if (primarySkills) {
-      query.primarySkills = { $regex: primarySkills, $options: 'i' };
+      const skillsArray = primarySkills.split(",");
+      query.primarySkills = { $in: skillsArray.map(skill => new RegExp(skill.trim(), 'i')) };
     }
 
     if (secondarySkills) {
-      query.secondarySkills = { $regex: secondarySkills, $options: 'i' };
+      const skillsArray = secondarySkills.split(",");
+      query.secondarySkills = { $in: skillsArray.map(skill => new RegExp(skill.trim(), 'i')) };
     }
 
     if (jobDescription) {
@@ -124,7 +126,7 @@ const searchJobs = async (req, res) => {
     }
 
     if (education) {
-      query.education = { $regex: education, $options: 'i' };
+      query.education.educationLevel = { $regex: education, $options: 'i' };
     }
 
     if (company) {
@@ -135,9 +137,9 @@ const searchJobs = async (req, res) => {
       query.location = { $regex: location, $options: 'i' };
     }
 
-    const jobs = await jobModel.find(query );
-    if (!jobs){
-      return res.status(404).json({status: false, message: "Data not found" });
+    const jobs = await jobModel.find({ $or: [ query ] });
+    if (jobs.length === 0) {
+      return res.status(404).json({ status: false, message: "No jobs found" });
     }
     return res.status(200).json({ status: true, data: jobs });
   } catch (error) {
@@ -146,6 +148,7 @@ const searchJobs = async (req, res) => {
   }
 };
 
-module.exports = { jobInfo,  searchJobs, updateJobData };
+
+module.exports = { jobInfo, searchJobs, updateJobData };
 
 

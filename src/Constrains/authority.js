@@ -49,22 +49,22 @@ module.exports.EducationLevelPoints={
 //     FutureLearn: 100
 // };
 
-// const Experience = {
-//     "Fresher": 100,
-//     "1 Year": 1200,
-//     "2 Year": 2400,
-//     "3 Year": 3600,
-//     "4 Year": 4800,
-//     "5 Year": 6000,
-//     "6 Year": 7200,
-//     "7 Year": 8400,
-//     "8 Year": 9600,
-//     "9 Year": 10800,
-//     "10 Year":12000,
-//     "11 to 15 Year": 13200,
-//     "15 to 20 Year": 14400,
-//     "20+ Year": 15600
-// };
+module.exports.ExperienceLevelPoints={
+    "Fresher": 100,
+    "1 Year": 1200,
+    "2 Year": 2400,
+    "3 Year": 3600,
+    "4 Year": 4800,
+    "5 Year": 6000,
+    "6 Year": 7200,
+    "7 Year": 8400,
+    "8 Year": 9600,
+    "9 Year": 10800,
+    "10 Year":12000,
+    "11 to 15 Year": 13200,
+    "15 to 20 Year": 14400,
+    "20+ Year": 15600
+};
 
 // Export objects
 // module.exports = {

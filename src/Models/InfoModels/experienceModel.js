@@ -1,4 +1,3 @@
-const { string } = require("joi");
 const mongoose = require("mongoose");
 const ObjectId = mongoose.Schema.Types.ObjectId;
 const experienceSchema = new mongoose.Schema(
@@ -32,8 +31,9 @@ const experienceSchema = new mongoose.Schema(
             required: true,
         },
         experience: {
-            type: String
-      
+            type: String,
+            required: true,
+            trim : true
         },
     },
     {

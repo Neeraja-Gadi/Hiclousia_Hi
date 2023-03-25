@@ -1,6 +1,8 @@
-
+const experienceModel = require("../Models/InfoModels/experienceModel");
 const recruiterModel = require("../Models/recruiterModel");
-
+const userModel = require("../Models/userModel");
+const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
 const Joi = require('joi');
 
 const recruiterInfo = async function (req, res) {
@@ -89,7 +91,7 @@ const updateRecruiterData = async function (req, res) {
 
 
 
-// const searchJobseeker = async function (req, res) {
+// const getallUsers = async function (req, res) {
 
 //   try {
 
@@ -97,20 +99,21 @@ const updateRecruiterData = async function (req, res) {
 //       const userDetails = await Promise.all(searchJobseeker.map(async (user) => {
 
 //           const educationDetails = await educationModel.find({ userDetailsID: user._id });
-
-//           //const experienceDetails = await experienceModel.find({ userDetailsID: user._id } );
-//           //const skillsDetails = await skillsModel.find({ userDetailsID: user._id } );
-//           // const projectDetails = await projectsModel.find({ userDetailsID: user._id } );
-//           // // console.log(educationDetails)
+//           const experienceDetails = await experienceModel.find({ userDetailsID: user._id } );
+        //   const skillsDetails = await skillsModel.find({ userDetailsID: user._id } );
+        //   const projectDetails = await projectsModel.find({ userDetailsID: user._id } );
+          // console.log(educationDetails)
 //           let score = 0
 //           for (let i = 0; i < educationDetails.length; i++) {
-//               if (EducationLevelPoints[educationDetails[i].educationLevel] + AuthorityPoints[educationDetails[i].authority] > score) {
-//                   score = EducationLevelPoints[educationDetails[i].educationLevel] + AuthorityPoints[educationDetails[i].authority]
+//               if (EducationLevelPoints[educationDetails[i].educationLevel] + AuthorityPoints[educationDetails[i].authority]+ experienceLevelPoints[experienceDetails[i].experienceLevel] > score) {
+//                   score = EducationLevelPoints[educationDetails[i].educationLevel] + AuthorityPoints[educationDetails[i].authority] + experienceLevelPoints[experienceDetails[i].experienceLevel]
 //               }
+
 //           }
 //           return {
 //               userDetails: user,
 //               educationDetails,
+//               experienceDetails,
 //               PoolPoints: score
 //           }
 //             }));
@@ -131,10 +134,7 @@ const updateRecruiterData = async function (req, res) {
 //         }
 
 //       }
-const userModel = require("../Models/recruiterModel");
-const mongoose = require('mongoose');
-const ObjectId = mongoose.Types.ObjectId;
-
+//7777777777777777777777777777777777777777777777777777777777777777777777
 const searchJobseekerGeneral = async (req, res) => {
     try {
       const { experience, educationalLevel, discipline, primarySkills } = req.query;
@@ -157,9 +157,9 @@ const searchJobseekerGeneral = async (req, res) => {
         query.primarySkills = { $regex: primarySkills, $options: 'i' };
       }
   
-      const skillDetails = await mongoose.model('Skills').find(query).populate('userDetailsID', 'firstName lastName email');
-      const educationDetails = await mongoose.model('Education').find(query).populate('userDetailsID', 'firstName lastName email');
-      const experienceDetails = await mongoose.model('Experience').find(query).populate('userDetailsID', 'firstName lastName email');
+      const skillDetails = await mongoose.model('Skills').find(query).populate( 'firstName lastName email');
+      const educationDetails = await mongoose.model('Education').find(query).populate( 'firstName lastName email','authority');
+      const experienceDetails = await mongoose.model('Experience').find(query).populate( 'firstName lastName email');
   
       console.log('skillDetails:', skillDetails);
       console.log('educationDetails:', educationDetails);
@@ -177,5 +177,73 @@ const searchJobseekerGeneral = async (req, res) => {
     }
   };
   
-module.exports = {recruiterInfo, updateRecruiterData, updateRecruiterData, searchJobseekerGeneral };
+
+const recruiterSearch = async (req, res) => {
+    try {
+      const {
+        fullName,
+        email,
+        phoneNumber,
+        professionalSummary,
+        company,
+        jobTitle,
+        linkedin,
+        twitter
+      } = req.query;
+  
+      const query = {};
+  
+      if (fullName) {
+        const fullNameArray = fullName.split(",");
+        query.fullName = { $in: fullNameArray.map(name => new RegExp(name.trim(), 'i')) };
+      }
+  
+      if (email) {
+        const emailArray = email.split(",");
+        query.email = { $in: emailArray.map(email => new RegExp(email.trim(), 'i')) };
+      }
+  
+      if (phoneNumber) {
+        const phoneNumberArray = phoneNumber.split(",");
+        query.phoneNumber = { $in: phoneNumberArray.map(phoneNumber => new RegExp(phoneNumber.trim(), 'i')) };
+      }
+  
+      if (professionalSummary) {
+        const professionalSummaryArray = professionalSummary.split(",");
+        query.professionalSummary = { $in: professionalSummaryArray.map(summary => new RegExp(summary.trim(), 'i')) };
+      }
+  
+      if (company) {
+        const companyArray = company.split(",");
+        const workExperienceQuery = { company: { $in: companyArray.map(company => new RegExp(company.trim(), 'i')) } };
+        if (jobTitle) {
+          const jobTitleArray = jobTitle.split(",");
+          workExperienceQuery.jobTitle = { $in: jobTitleArray.map(jobTitle => new RegExp(jobTitle.trim(), 'i')) };
+        }
+        query.workExperience = { $elemMatch: workExperienceQuery };
+      }
+  
+      if (linkedin) {
+        const linkedinArray = linkedin.split(",");
+        query['socialMediaLinks.linkedin'] = { $in: linkedinArray.map(linkedin => new RegExp(linkedin.trim(), 'i')) };
+      }
+  
+      if (twitter) {
+        const twitterArray = twitter.split(",");
+        query['socialMediaLinks.twitter'] = { $in: twitterArray.map(twitter => new RegExp(twitter.trim(), 'i')) };
+      }
+  
+      const recruiters = await recruiterModel.find({ $or: [ query ] });
+      if (recruiters.length === 0) {
+        return res.status(404).json({ status: false, message: "No recruiters found" });
+      }
+      return res.status(200).json({ status: true, data: recruiters });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ status: false, message: "Server error" });
+    }
+  };
+  
+
+module.exports = {recruiterInfo, updateRecruiterData, updateRecruiterData, recruiterSearch, searchJobseekerGeneral };
 

@@ -24,17 +24,21 @@ router.post("/skill",infoController.skillsInfo);
 router.post("/job",jobController.jobInfo);
 router.post("/recruiter",recruiterController.recruiterInfo)
 
+//88888888888888888888888888888888888888888888888888888
 
 router.put("/experience/:id",infoController.updateExperienceData);
 router.put("/education/:id",infoController.updateEducationData);
 router.put("/skill/:id",infoController.updateSkillsData);
 router.put("/job/:id",jobController.updateJobData);
 
+//888888888888888888888888888888888888888888888888888888
+
 router.get("/personal/:id",infoController.personalInfo);
 router.get("/job",jobController.searchJobs);
+router.get("/jobseeker",recruiterController.recruiterSearch);
+router.get("/allusers",infoController.getallUsers);
 
-router.get("/allusers/:id",infoController.getallUsers);
-router.get("/jobseeker",recruiterController.searchJobseekerGeneral);
+router.get("/AllRecruiter",recruiterController.searchJobseekerGeneral);
 
 
 

@@ -4,7 +4,7 @@ const projectsModel = require("../Models/InfoModels/projectsModel.js");
 
 const skillsModel = require("../Models/InfoModels/skillsModel.js")
 const userModel = require("../Models/userModel.js")
-const { AuthorityPoints, EducationLevelPoints } = require("../Constrains/authority.js");
+const { AuthorityPoints, EducationLevelPoints, ExperienceLevelPoints } = require("../Constrains/authority.js");
 const Joi = require('joi');
 // *************************************************************************///
 const educationInfo = async function (req, res) {
@@ -257,35 +257,36 @@ const getallUsers = async function (req, res) {
         const userDetails = await Promise.all(allUsers.map(async (user) => {
 
             const educationDetails = await educationModel.find({ userDetailsID: user._id });
-            // const experienceDetails = await experienceModel.find({ userDetailsID: user._id } );
+            const experienceDetails = await experienceModel.find({ userDetailsID: user._id });
             // const skillsDetails = await skillsModel.find({ userDetailsID: user._id } );
             // const projectDetails = await projectsModel.find({ userDetailsID: user._id } );
-            // // console.log(educationDetails)
+
             let score = 0
             for (let i = 0; i < educationDetails.length; i++) {
-                if (EducationLevelPoints[educationDetails[i].educationLevel] + AuthorityPoints[educationDetails[i].authority] > score) {
-                    score = EducationLevelPoints[educationDetails[i].educationLevel] + AuthorityPoints[educationDetails[i].authority]
+                if (EducationLevelPoints[educationDetails[i].educationLevel] + AuthorityPoints[educationDetails[i].authority] + ExperienceLevelPoints[experienceDetails[i].experience] > score) {
+                    score = EducationLevelPoints[educationDetails[i].educationLevel] + AuthorityPoints[educationDetails[i].authority] + ExperienceLevelPoints[experienceDetails[i].experience]
                 }
             }
             return {
 
                 userDetails: user,
                 educationDetails,
+                experienceDetails,
                 PoolPoints: score
-                //   experienceDetails,
+
                 //   skillsDetails,
                 //   projectDetails
             }
 
         }));
-        let premiumPool=[],vipPool=[],normalPool=[]
-        userDetails.map((userD)=>{
-            if(userD.PoolPoints>=1700)premiumPool.push(userD)
-            else if(userD.PoolPoints>=1000)vipPool.push(userD)
+        let premiumPool = [], vipPool = [], normalPool = []
+        userDetails.map((userD) => {
+            if (userD.PoolPoints >= 1700) premiumPool.push(userD)
+            else if (userD.PoolPoints >= 1000) vipPool.push(userD)
             else normalPool.push(userD)
         })
 
-        res.json({premiumPool,vipPool,normalPool});
+        res.json({ premiumPool, vipPool, normalPool });
     } catch (error) {
         console.error(error);
         res.status(500).json({ msg: error.message });
