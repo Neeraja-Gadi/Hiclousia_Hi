@@ -16,24 +16,24 @@ const experienceSchema = new mongoose.Schema(
         },
         companyName: {
             type: String,
-            required: true,
+            required: true
         },
         companyType: {
-            type: String,
+            type: String
             // enum: ["MNC", "Start-Ups", "Government", "Service-Based", "Product-Based"]
         },
         companyLocation: {
             type: String,
-            required: true,
+            required: true
         },
         skills: {
             type: [String],
-            required: true,
+            required: true
         },
         experience: {
             type: String,
             required: true,
-            trim : true
+            trim: true
         },
     },
     {

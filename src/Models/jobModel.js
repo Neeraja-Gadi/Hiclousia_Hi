@@ -42,6 +42,10 @@ const jobSchema = new mongoose.Schema(
         type: String,
         required: true,
       },
+      discipline: {
+        type: String,
+        required: true
+      }
     }
     ],
     company: {

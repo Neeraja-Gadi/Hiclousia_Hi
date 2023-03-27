@@ -1,4 +1,4 @@
-// Define objects
+
 module.exports.AuthorityPoints={
     IIT: 1000,
     IIM: 900,
@@ -49,7 +49,10 @@ module.exports.EducationLevelPoints={
 //     FutureLearn: 100
 // };
 
-module.exports.ExperienceLevelPoints={
+
+
+module.exports.ExperienceLevelPoints = {
+
     "Fresher": 100,
     "1 Year": 1200,
     "2 Year": 2400,

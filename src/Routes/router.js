@@ -34,11 +34,15 @@ router.put("/job/:id",jobController.updateJobData);
 //888888888888888888888888888888888888888888888888888888
 
 router.get("/personal/:id",infoController.personalInfo);
-router.get("/job",jobController.searchJobs);
+router.get("/job",jobController.searchJobs); //general job search for user or jobseeker
 router.get("/jobseeker",recruiterController.recruiterSearch);
-router.get("/allusers",infoController.getallUsers);
 
-router.get("/AllRecruiter",recruiterController.searchJobseekerGeneral);
+
+router.get("/allrecruiter",recruiterController.searchJobseekerGeneral);// general recruiter search for candidate
+
+router.get("/allusers/:id",recruiterController.searchjobseekers) //pool based serach for Recruiter
+
+
 
 
 

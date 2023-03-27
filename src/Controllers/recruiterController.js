@@ -1,8 +1,16 @@
-const experienceModel = require("../Models/InfoModels/experienceModel");
+
 const recruiterModel = require("../Models/recruiterModel");
+
 const userModel = require("../Models/userModel");
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
+
+const jobModel = require("../Models/jobModel");
+const educationModel = require("../Models/InfoModels/educationModel.js");
+const experienceModel =require("../Models/InfoModels/experienceModel.js")
+const { EducationLevelPoints, AuthorityPoints } = require("../Constrains/authority.js");
+
+
 const Joi = require('joi');
 
 const recruiterInfo = async function (req, res) {
@@ -87,6 +95,7 @@ const updateRecruiterData = async function (req, res) {
     }
 };
 
+
 //88888//
 
 
@@ -157,9 +166,10 @@ const searchJobseekerGeneral = async (req, res) => {
         query.primarySkills = { $regex: primarySkills, $options: 'i' };
       }
   
-      const skillDetails = await mongoose.model('Skills').find(query).populate( 'firstName lastName email');
-      const educationDetails = await mongoose.model('Education').find(query).populate( 'firstName lastName email','authority');
-      const experienceDetails = await mongoose.model('Experience').find(query).populate( 'firstName lastName email');
+      const skillDetails = await mongoose.model('Skills').find(query).populate('userDetailsID.skills');
+
+      const educationDetails = await mongoose.model('Education').find(query).populate('userDetailsID.education');
+      const experienceDetails = await mongoose.model('Experience').find(query).populate( 'UserDetailsID.experience');
   
       console.log('skillDetails:', skillDetails);
       console.log('educationDetails:', educationDetails);
@@ -245,5 +255,165 @@ const recruiterSearch = async (req, res) => {
   };
   
 
-module.exports = {recruiterInfo, updateRecruiterData, updateRecruiterData, recruiterSearch, searchJobseekerGeneral };
+//*8888888888888888888888888888888888888888888888888888888
+
+//Based on Talentpool
+// const searchjobseekers = async function (req, res) {
+
+//     try {
+  
+//       const allUsers = await userModel.find({ recruiter: false }).select({firstName:1 ,lastName:1,email:1});
+//       const userDetails = await Promise.all(allUsers.map(async (user) => {
+  
+//         const educationDetails = await educationModel.find({ userDetailsID: user._id }).select({userDetailsID:1,educationLevel:1,authority:1,discipline:1});
+//         const experienceDetails = await experienceModel.find({ userDetailsID: user._id } );
+//         // const skillsDetails = await skillsModel.find({ userDetailsID: user._id } );
+//         // const projectDetails = await projectsModel.find({ userDetailsID: user._id } );
+//         // // console.log(educationDetails)
+  
+//         let score = 0
+//         for (let i = 0; i < educationDetails.length; i++) {
+//           if (EducationLevelPoints[educationDetails[i].educationLevel] + AuthorityPoints[educationDetails[i].authority] > score) {
+//             score = EducationLevelPoints[educationDetails[i].educationLevel] + AuthorityPoints[educationDetails[i].authority]
+//           }
+//         }
+  
+//         return {
+  
+//           userDetails: user,
+//           educationDetails,
+//           PoolPoints: score,
+//           experienceDetails,
+//           //   skillsDetails,
+//           //   projectDetails
+//         }
+  
+//       }));
+
+//     //   Creation of pools
+//       let premiumPool = [], vipPool = [], normalPool = []
+//       userDetails.map((userD) => {
+//         if (userD.PoolPoints >= 1700) premiumPool.push(userD)
+//         else if (userD.PoolPoints >= 1000) vipPool.push(userD)
+//         else normalPool.push(userD)
+//       })
+  
+//     //   Count the score of the jobpost created by recruiter   and refined the users acc to jobscore
+//       const id = req.params.id                  //  get recruiter id from path
+//       const jobposts = await jobModel.find({ userDetailsID: id })
+
+//       let jobpostscore = 0; let jobPostinfo = []; 
+
+//       for (let i = 0; i < jobposts.length; i++) {
+//         jobpostscore = 0;
+//         for (let j = 0; j < jobposts[i].education.length; j++) {
+  
+//           jobpostscore = jobpostscore + EducationLevelPoints[jobposts[i].education[j].educationLevel] + 
+//           AuthorityPoints[jobposts[i].education[j].authority]
+       
+  
+//           // console.log(jobpostscore)
+//         }
+//         let jobscoreavg = (jobposts[i].education.length )
+//         // console.log("jobscoreavg -", jobscoreavg)
+//         // console.log(jobpostscore)
+//         jobpostscore = jobpostscore / jobscoreavg
+//         jobPostinfo.push({ jobId: jobposts[i]._id, jobpoints: jobpostscore })
+//       }
+  
+//       let refinedcandidates = []
+//       // console.log(jobPostinfo) 
+//       jobPostinfo.map((jpoints) => {
+//         if (jpoints.jobpoints >= 1700) {
+//           premiumPool.map((premiumCandidate) => {
+  
+//             if (premiumCandidate.PoolPoints >= jpoints.jobpoints) {
+//               refinedcandidates.push(premiumCandidate)
+//               jpoints.refinedcandidates = refinedcandidates
+//             }
+                 
+//           })
+//           jpoints.refinedcandidates = refinedcandidates
+          
+//         }
+//         else if (jpoints.jobpoints < 1700 && jpoints.jobpoints >= 1000) {
+//           jpoints.refinedcandidates = vipPool.map((vipCandidate) => {
+//             if (vipCandidate.PoolPoints >= jpoints.jobpoints) {
+//               refinedcandidates.push(vipCandidate)
+//             }
+//             //  console.log(vipCandidate)
+//           })
+//           jpoints.refinedcandidates = refinedcandidates
+//         }
+//         else if (jpoints.jobpoints < 1000) {
+//           jpoints.refinedcandidates = normalPool.map((normalCandidate) => {
+//             if (normalCandidate.PoolPoints >= jpoints.jobpoints) {
+//               refinedcandidates.push(normalCandidate)
+              
+//               //  console.log(normalCandidate)
+//             }
+//           })
+//           jpoints.refinedcandidates = refinedcandidates
+//         }
+//       }
+//       )
+  
+//       res.json({ staus: true, data: jobPostinfo });
+//     } catch (error) {
+//       console.error(error);
+//       res.status(500).json({ msg: error.message });
+//     }
+  
+//   }
+const searchjobseekers = async function (req, res) {
+
+  try {
+
+    const allUsers = await userModel.find({ recruiter: false }).select({firstName:1 ,lastName:1,email:1});
+    const userDetails = await Promise.all(allUsers.map(async (user) => {
+
+      const educationDetails = await educationModel.find({ userDetailsID: user._id }).select({userDetailsID:1,educationLevel:1,authority:1,discipline:1});
+      const experienceDetails = await experienceModel.find({ userDetailsID: user._id } );
+      // const skillsDetails = await skillsModel.find({ userDetailsID: user._id } );
+      // const projectDetails = await projectsModel.find({ userDetailsID: user._id } );
+      // // console.log(educationDetails)
+
+      let score = 0
+      for (let i = 0; i < educationDetails.length; i++) {
+        if (EducationLevelPoints[educationDetails[i].educationLevel] + AuthorityPoints[educationDetails[i].authority] > score) {
+          score = EducationLevelPoints[educationDetails[i].educationLevel] + AuthorityPoints[educationDetails[i].authority]
+        }
+      }
+
+      return {
+
+        userDetails: user,
+        educationDetails,
+        PoolPoints: score,
+        experienceDetails,
+        //   skillsDetails,
+        //   projectDetails
+      }
+
+    }));
+
+    // Create pools
+    let premiumPool = [], vipPool = [], normalPool = []
+    userDetails.map((userD) => {
+      if (userD.PoolPoints >= 1700) premiumPool.push(userD)
+      else if (userD.PoolPoints >= 1000) vipPool.push(userD)
+      else normalPool.push(userD)
+    })
+
+    // Return pool data
+    res.json({ status: true, data: { premiumPool, vipPool, normalPool } });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: error.message });
+  }
+
+}
+
+module.exports = { recruiterInfo, updateRecruiterData ,searchjobseekers, recruiterSearch, searchJobseekerGeneral};
 

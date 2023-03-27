@@ -19,6 +19,7 @@ const jobInfo = async (req, res) =>{
             Joi.object({
                 authority: Joi.string().required(),
                 educationLevel: Joi.string().required(),
+                discipline: Joi.string().required(),
             })
           ).required(),
       });
@@ -51,7 +52,8 @@ const updateJobData = async function(req, res){
           education: Joi.array().items(
             Joi.object({
                 authority: Joi.string().required(),
-                educationLevel: Joi.string().required()
+                educationLevel: Joi.string().required(),
+                discipline: Joi.string().required(),
             })
         ).required(),
           sector: Joi.string(),
@@ -79,6 +81,8 @@ const updateJobData = async function(req, res){
           jobData.experience=req.body.experience;
           jobData.jobRole=req.body.jobRole;
 
+
+
       const updatedData = await jobModel.findByIdAndUpdate({_id: id}, jobData, {new:true});
       return res.status(200).send({ status: true, data: updatedData, message: 'Job data updated' });
       // 
@@ -98,7 +102,8 @@ const searchJobs = async (req, res) => {
       jobDescription,
       education,
       company,
-      location
+      location,
+      discipline
     } = req.query;
 
     const query = {};
@@ -136,6 +141,11 @@ const searchJobs = async (req, res) => {
     if (location) {
       query.location = { $regex: location, $options: 'i' };
     }
+
+    if (discipline) {
+      query.discipline = { $regex: location, $options: 'i' };
+    }
+
 
     const jobs = await jobModel.find({ $or: [ query ] });
     if (jobs.length === 0) {

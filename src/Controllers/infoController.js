@@ -4,12 +4,13 @@ const projectsModel = require("../Models/InfoModels/projectsModel.js");
 
 const skillsModel = require("../Models/InfoModels/skillsModel.js")
 const userModel = require("../Models/userModel.js")
+
 const { AuthorityPoints, EducationLevelPoints, ExperienceLevelPoints } = require("../Constrains/authority.js");
+
+
 const Joi = require('joi');
-// *************************************************************************///
 const educationInfo = async function (req, res) {
-    try {
-        const { userDetailsID, educationLevel, collegeName, authority, discipline, yearOfpassout } = req.body;
+    try {     
 
         const educationSchema = Joi.object({
             userDetailsID: Joi.string().required(),
@@ -19,6 +20,7 @@ const educationInfo = async function (req, res) {
             discipline: Joi.string().required(),
             yearOfpassout: Joi.string().required()
         });
+
         const validationResult = educationSchema.validate(req.body, { abortEarly: false });
         if (validationResult.error) {
             return res.status(400).send({ status: false, message: validationResult.error.details[0].message });
@@ -29,15 +31,15 @@ const educationInfo = async function (req, res) {
         if (data)
             return res.status(200).send({ status: true, data: data, message: 'Education data created' });
 
-
     } catch (err) {
         res.status(500).send({ status: false, message: err.message })
     }
-}
+};
+
 // *************************************************************
 const updateEducationData = async function (req, res) {
     try {
-        const { userDetailsID, educationLevel, collegeName, authority, discipline, yearOfpassout } = req.body;
+        
         const educationSchema = Joi.object({
             userDetailsID: Joi.string(),
             educationLevel: Joi.string(),
@@ -173,7 +175,6 @@ const projectInfo = async function (req, res) {
     }
 }
 
-
 /**
 88888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888**/
 
@@ -196,7 +197,7 @@ const skillsInfo = async function (req, res) {
         res.status(500).send({ status: false, message: err.message })
     }
 }
-// ************************************************************************
+// **********************************************************************************
 const updateSkillsData = async function (req, res) {
     try {
         const skillsSchema = Joi.object({
@@ -208,6 +209,7 @@ const updateSkillsData = async function (req, res) {
         if (validationResult.error) {
             return res.status(400).send({ status: false, message: validationResult.error.details[0].message });
         };
+
         const id = req.params.id;
         let skillData = {};
         skillData = await skillsModel.findById({ _id: id });
@@ -248,51 +250,4 @@ const personalInfo = async function (req, res) {
     }
 }
 
-/**********************************************************************************/
-const getallUsers = async function (req, res) {
-
-    try {
-
-        const allUsers = await userModel.find({ recruiter: false });
-        const userDetails = await Promise.all(allUsers.map(async (user) => {
-
-            const educationDetails = await educationModel.find({ userDetailsID: user._id });
-            const experienceDetails = await experienceModel.find({ userDetailsID: user._id });
-            // const skillsDetails = await skillsModel.find({ userDetailsID: user._id } );
-            // const projectDetails = await projectsModel.find({ userDetailsID: user._id } );
-
-            let score = 0
-            for (let i = 0; i < educationDetails.length; i++) {
-                if (EducationLevelPoints[educationDetails[i].educationLevel] + AuthorityPoints[educationDetails[i].authority] + ExperienceLevelPoints[experienceDetails[i].experience] > score) {
-                    score = EducationLevelPoints[educationDetails[i].educationLevel] + AuthorityPoints[educationDetails[i].authority] + ExperienceLevelPoints[experienceDetails[i].experience]
-                }
-            }
-            return {
-
-                userDetails: user,
-                educationDetails,
-                experienceDetails,
-                PoolPoints: score
-
-                //   skillsDetails,
-                //   projectDetails
-            }
-
-        }));
-        let premiumPool = [], vipPool = [], normalPool = []
-        userDetails.map((userD) => {
-            if (userD.PoolPoints >= 1700) premiumPool.push(userD)
-            else if (userD.PoolPoints >= 1000) vipPool.push(userD)
-            else normalPool.push(userD)
-        })
-
-        res.json({ premiumPool, vipPool, normalPool });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ msg: error.message });
-    }
-
-}
-
-
-module.exports = { educationInfo, updateEducationData, experienceInfo, updateExperienceData, projectInfo, skillsInfo, updateSkillsData, personalInfo, getallUsers };
+module.exports = { educationInfo, updateEducationData, experienceInfo, updateExperienceData, projectInfo, skillsInfo, updateSkillsData, personalInfo };
