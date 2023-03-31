@@ -28,11 +28,11 @@ function App() {
                     <Third />
                     <Fourth />
                     <Fifth />
-                    
+                   
                       
                 </>} />
                 <Route path ="login" element={<Login />}/>
-                {/* <Route path ="multiform6" element={<JobForm />}/> */}
+                
                 <Route path ="UserProfile" element={<UserProfile/>}/>
                 <Route path= "EducationForm" element={ <EducationForm/>}/>
                 <Route path= "ExperienceForm" element={ <ExperienceForm/>}/>
@@ -49,3 +49,4 @@ function App() {
     )
 }
 export default App;
+

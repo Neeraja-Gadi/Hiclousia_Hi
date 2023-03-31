@@ -1,7 +1,8 @@
 import React from "react";
 import "../../styles/App.css";
-import { asian1 } from "../../images";
-import { asian2 } from "../../images";
+import { asian1 } from "../../images/index.js";
+import { asian2 } from "../../images/index.js";
+
 
 function Fourth() {
   return (

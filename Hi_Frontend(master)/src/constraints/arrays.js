@@ -246,6 +246,4 @@ let secondarySkills =  [
         ] ;
       
 
-
-
 export { location, jobRole, primarySkills  , secondarySkills  , sector}

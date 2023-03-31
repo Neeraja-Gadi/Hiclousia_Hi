@@ -1,6 +1,7 @@
 import React from 'react';
 import '../../styles/App.css';
-import {second} from "../../images"
+import {second} from "../../images/index.js"
+
 
 function Third()
 {

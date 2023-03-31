@@ -1,8 +1,9 @@
 import React from 'react';
 import '../../styles/App.css';
-import {map} from '../../images';
-import {iitmrs} from '../../images';
-import {iitmgate} from '../../images';
+import {map} from '../../images/index.js';
+import {iitmrs} from '../../images/index.js';
+import {iitmgate} from '../../images/index.js';
+
 
 function Fifth()
 {

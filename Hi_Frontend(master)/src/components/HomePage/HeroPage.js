@@ -23,7 +23,6 @@ function logOut(){
 
   return(
 
-    
     <div className="hero">
       <div className="nav">
         <div className="logo">

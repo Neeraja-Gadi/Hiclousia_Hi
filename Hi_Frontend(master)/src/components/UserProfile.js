@@ -86,7 +86,6 @@ function UserProfile() {
 
     }, [])
 
-
     return (
 
         <div >

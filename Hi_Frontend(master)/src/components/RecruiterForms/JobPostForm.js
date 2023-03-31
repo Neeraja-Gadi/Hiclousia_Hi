@@ -315,6 +315,7 @@ const JobForm = () => {
                         required
                     />
                     <MultipleSelectChip handleFunction={handleJobChange} index={index} requiredData={primarySkills} labelName={"Primary Skills"} />
+                    
                     {/* <TextField
 
                         label="Primary Skills"

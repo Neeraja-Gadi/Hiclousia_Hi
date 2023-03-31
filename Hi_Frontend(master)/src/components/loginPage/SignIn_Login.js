@@ -11,6 +11,7 @@ import styled from 'styled-components';
  min-height: 400px;
  `;
 
+ 
  export const SignUpContainer = styled.div`
   position: absolute;
   top: 0;

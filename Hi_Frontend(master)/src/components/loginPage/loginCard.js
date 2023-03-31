@@ -1,6 +1,6 @@
 import { height } from "@mui/system";
 import React from "react";
-import {Admin} from "../../images/index"
+import {Admin} from "../../images/index.js"
 
 function LoginCard(){
     return(
@@ -10,4 +10,5 @@ function LoginCard(){
         </div>
     )
 }
+
 export default LoginCard;

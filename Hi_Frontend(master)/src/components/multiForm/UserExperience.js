@@ -182,7 +182,6 @@ function ExperienceForm() {
               onChange={(e) => handleChange(e, i)}
               label="Experience"
               required
-
             >
               <MenuItem value="">
                 <em>Select</em>

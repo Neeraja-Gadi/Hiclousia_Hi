@@ -2,6 +2,7 @@ import React from 'react';
 import '../../styles/App.css';
 // import {third} from "../images"---------------------------------------------------------------------------------
 
+
 function Sec()
 {
     return(

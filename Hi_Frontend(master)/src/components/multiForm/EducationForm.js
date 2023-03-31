@@ -126,8 +126,11 @@ const EducationForm = () => {
           navigate("/ExperienceForm")
         }
       }
+
       ))
+
     })
+
     return true
   }
 
@@ -135,7 +138,6 @@ const EducationForm = () => {
     event.preventDefault();
     SaveEducation()
     
-
   }
   return (
     <>   
