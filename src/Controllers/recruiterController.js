@@ -412,6 +412,7 @@ const searchjobseekers = async function (req, res) {
     console.error(error);
     res.status(500).json({ msg: error.message });
   }
+  
 
 }
 
