@@ -18,7 +18,7 @@ const projectsSchema = new mongoose.Schema(
             type: String,
             
         },
-        organizatioName: {
+        organizationName: {
             type: String,
       
         },

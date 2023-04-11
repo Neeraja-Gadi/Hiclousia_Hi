@@ -7,6 +7,7 @@ const educationSchema = new mongoose.Schema(
       type: ObjectId,
       ref: "user"
     },
+    
     educationLevel:
     {
       type: String,
@@ -32,7 +33,7 @@ const educationSchema = new mongoose.Schema(
     {
       type: Date,
       required: true
-    }
+    },
 
   },
   { timestamps: true }

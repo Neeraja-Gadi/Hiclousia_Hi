@@ -17,11 +17,11 @@ const jobSchema = new mongoose.Schema(
       required: true,
     },
     primarySkills: {
-      type: String,
+      type: [String],
       required: true,
     },
     secondarySkills: {
-      type: String,
+      type: [String],
       required: true,
     },
     jobDiscription: {
@@ -65,4 +65,11 @@ const jobSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Job", jobSchema);
+                                                                                                            
+                                                                                                            
+                                                                                                            
+                                                                                                            
+                                                                                                            
+                                                                                                            
+                                                                                                            
+                                 module.exports = mongoose.model("Job", jobSchema);

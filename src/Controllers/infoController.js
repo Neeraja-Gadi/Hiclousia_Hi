@@ -18,7 +18,8 @@ const educationInfo = async function (req, res) {
             collegeName: Joi.string().required(),
             authority: Joi.string().required(),
             discipline: Joi.string().required(),
-            yearOfpassout: Joi.string().required()
+            yearOfpassout: Joi.string().required(),
+            experience: Joi.string().required()
         });
 
         const validationResult = educationSchema.validate(req.body, { abortEarly: false });
@@ -76,7 +77,7 @@ const updateEducationData = async function (req, res) {
 }
 
 /**
-88888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888**/
+*****************************************************************/
 
 
 const experienceInfo = async function (req, res) {
@@ -147,8 +148,8 @@ const updateExperienceData = async function (req, res) {
         return res.status(500).send({ status: false, message: err.message })
     }
 }
-/**
-88888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888**/
+
+/**********************************************************/
 
 const projectInfo = async function (req, res) {
     try {
@@ -175,15 +176,14 @@ const projectInfo = async function (req, res) {
     }
 }
 
-/**
-88888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888**/
+/*********************************************************/
 
 const skillsInfo = async function (req, res) {
     try {
         const skillsSchema = Joi.object({
             userDetailsID: Joi.string().required(),
-            primarySkills: Joi.array().required(),
-            secondarySkills: Joi.array().required(),
+            primarySkills:Joi.array().items().string().min(1).required(),
+            secondarySkills: Joi.array().items(Joi.string()).min(1).required(),
         });
         const validationResult = skillsSchema.validate(req.body, { abortEarly: false });
         if (validationResult.error) {
@@ -250,4 +250,51 @@ const personalInfo = async function (req, res) {
     }
 }
 
-module.exports = { educationInfo, updateEducationData, experienceInfo, updateExperienceData, projectInfo, skillsInfo, updateSkillsData, personalInfo };
+
+// GET education data by user ID
+const educationInformation = async function(req, res) {
+    try {
+        const id = req.params.id;
+        const educationData = await educationModel.find({ userDetailsID: id });
+        res.status(200).json({ status: true, data: educationData });
+    }
+    catch (err) 
+    {
+        res.status(500).json({ status: false, message: err.message });
+    }
+}
+const experienceInformation = async function(req, res) {
+    try {
+        const id = req.params.id;
+        const experienceData = await experienceModel.find({ userDetailsID: id });
+        res.status(200).json({ status: true, data: experienceData });
+    }
+    catch (err) {
+        res.status(500).json({ status: false, message: err.message });
+    }
+}
+const projectInformation = async function(req, res) {
+    try {
+        const id = req.params.id;
+        const projectData = await projectsModel.find({ userDetailsID: id });
+        res.status(200).json({ status: true, data: projectData });
+    }
+    catch (err) {
+        res.status(500).json({ status: false, message: err.message });
+    }
+}
+const skillsInformation = async function(req, res) {
+    try {
+        const id = req.params.id;
+        const skillsData = await skillsModel.findOne({ userDetailsID: id });
+        res.status(200).json({ status: true, data: skillsData });
+    }
+    catch (err) {
+        res.status(500).json({ status: false, message: err.message });
+    }
+}
+
+
+
+
+module.exports = {projectInformation, skillsInformation, experienceInformation, educationInformation, educationInfo, updateEducationData, experienceInfo, updateExperienceData, projectInfo, skillsInfo, updateSkillsData, personalInfo };

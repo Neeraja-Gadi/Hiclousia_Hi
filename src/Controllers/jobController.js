@@ -8,24 +8,24 @@ const jobInfo = async (req, res) =>{
           userDetailsID: Joi.string().required(),
           jobRole: Joi.string().required(),
           experience: Joi.string().required(),
-          primarySkills: Joi.string().required(),
-          secondarySkills: Joi.string().required(),
-          jobDiscription: Joi.string(),
+          primarySkills: Joi.array().items(Joi.string()).required(),
+          secondarySkills: Joi.array().items(Joi.string()).required(),
+          jobDiscription: Joi.string().allow(null, ''),
           salary: Joi.string().required(),
           location: Joi.string().required(),
-          company: Joi.string(),
-          sector: Joi.string(),
+          company: Joi.string().allow(null, ''),
+          sector: Joi.string().allow(null, ''),
           education: Joi.array().items(
             Joi.object({
                 authority: Joi.string().required(),
                 educationLevel: Joi.string().required(),
-                discipline: Joi.string().required(),
+                discipline: Joi.string().allow(null, ''),
             })
-          ).required(),
+          ),
       });
       const validationResult = jobSchema.validate(req.body, { abortEarly: false });
       if (validationResult.error) {
-          return res.status(400).send({ status: false, message: validationResult.error.details[0].message });
+          return res.status(404).send({ status: false, message: validationResult.error.details[0].message });
       };
       const data = await jobModel.create(req.body);
       if (data)
@@ -109,7 +109,8 @@ const searchJobs = async (req, res) => {
     const query = {};
 
     if (jobRole) {
-      query.jobRole = { $regex: jobRole, $options: 'i' };
+      const jobRoleArray = jobRole.split(",");
+      query.jobRole = {$in: jobRoleArray.map(jobRole => new RegExp(jobRole.trim(), 'i')) };
     }
     if (experience) {
       const experienceArray = experience.split(",");
@@ -154,11 +155,20 @@ const searchJobs = async (req, res) => {
     return res.status(200).json({ status: true, data: jobs });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ status: false, message: "Server error" });
+    return res.status(500).json({ status: false, message: error.message });
   }
 };
+const jobpostbyRecruiter = async function(req, res) {
+  try {
+    const id = req.params.id;
+    const jobData = await jobModel.find({ userDetailsID: id });
+    res.status(200).json({ status: true, data: jobData });
+  } catch (err) {
+    res.status(500).json({ status: false, message: err.message });
+  }
+}
 
 
-module.exports = { jobInfo, searchJobs, updateJobData };
+module.exports = {jobpostbyRecruiter, jobInfo, searchJobs, updateJobData };
 
 
