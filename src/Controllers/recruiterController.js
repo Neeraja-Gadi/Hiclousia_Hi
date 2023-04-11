@@ -447,7 +447,7 @@ async function recruiterSearch(req, res) {
     );
     // console.log(result)
     result = result.filter(result => result !== null);
-    res.send(result);
+    res.send({status: true ,data: result});
     
   } catch (error) {
 

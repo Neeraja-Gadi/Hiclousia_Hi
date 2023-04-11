@@ -152,6 +152,7 @@ const searchJobs = async (req, res) => {
     if (jobs.length === 0) {
       return res.status(404).json({ status: false, message: "No jobs found" });
     }
+    
     return res.status(200).json({ status: true, data: jobs });
   } catch (error) {
     console.error(error);
