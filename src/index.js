@@ -14,6 +14,10 @@ app.use(express.json());
 app.use(cors());
 app.use("/" , route);
 
+
+app.use("/msg" , (req,res)=>{
+    res.json({msg: "We are from Hiclousia"}) 
+})
 // DATABASE CONNECTION
 
 mongoose.connect('mongodb+srv://Neeraja:Hiclousia@123@cluster0.koj69cg.mongodb.net/?retryWrites=true&w=majority',

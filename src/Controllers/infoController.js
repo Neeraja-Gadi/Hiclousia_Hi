@@ -182,7 +182,7 @@ const skillsInfo = async function (req, res) {
     try {
         const skillsSchema = Joi.object({
             userDetailsID: Joi.string().required(),
-            primarySkills:Joi.array().items().string().min(1).required(),
+            primarySkills:Joi.array().items(Joi.string()).min(1).required(),
             secondarySkills: Joi.array().items(Joi.string()).min(1).required(),
         });
         const validationResult = skillsSchema.validate(req.body, { abortEarly: false });
@@ -202,7 +202,7 @@ const updateSkillsData = async function (req, res) {
     try {
         const skillsSchema = Joi.object({
             userDetailsID: Joi.string(),
-            primarySkills: Joi.string(),
+            primarySkills: Joi.array().items(Joi.string()) , 
             secondarySkills: Joi.string()
         });
         const validationResult = skillsSchema.validate(req.body, { abortEarly: false });
@@ -210,14 +210,14 @@ const updateSkillsData = async function (req, res) {
             return res.status(400).send({ status: false, message: validationResult.error.details[0].message });
         };
 
-        const id = req.params.id;
+        const id = req.params.id;  
         let skillData = {};
         skillData = await skillsModel.findById({ _id: id });
         if (!skillData) {
             return res.status(404).send({ status: false, message: 'Skill data not found' });
         }
         // if (req.method === 'PUT') {
-        skillData.userDetailsID = req.body.userDetailsID;
+       
         skillData.primarySkills = req.body.primarySkills;
         skillData.secondarySkills = req.body.secondarySkills;
 
