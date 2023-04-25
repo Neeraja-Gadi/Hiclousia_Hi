@@ -5,13 +5,12 @@ const userModel = require("../Models/userModel");
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 const jobModel = require("../Models/jobModel");
-const educationModel = require("../Models/InfoModels/educationModel.js");
-const experienceModel = require("../Models/InfoModels/experienceModel.js");
+const educationModel = require("../Models/InfoModels/educationModel");
+const experienceModel = require("../Models/InfoModels/experienceModel");
 const { EducationLevelPoints, AuthorityPoints, ExperienceLevelPoints } = require("../Constrains/authority.js");
-
-
 const Joi = require('joi');
 const skillsModel = require("../Models/InfoModels/skillsModel");
+const projectsModel = require("../Models/InfoModels/projectsModel");
 
 const recruiterInfo = async function (req, res) {
   try {
@@ -95,55 +94,77 @@ const updateRecruiterData = async function (req, res) {
   }
 };
 
+const jobSearch = async (req, res) => {
+  try {
+    const jobId = req.params.id;
 
-//88888//
+    // Find the job that matches the jobId
+    const job = await jobModel.findOne({ _id: jobId });
+    //console.log(job);
 
+    // Find users that connects all user when recruiter fields should be equal-to-false.
+    const users = await userModel.find({ recruiter: false });
+    //console.log(users);
+    // Loop through each individual user to fetch their all details corresponding to the 'id' fields. 'id' fields later provided same 'id' as the 'userDetailID' fields for the different Models=educationModel,experienceModel,skillsModel,projectModel,userprofileModel...
+    const usersWithDetails = await Promise.all(
+      users.map(async (user) => {
+        const education = await educationModel.find({ userDetailsID: user._id });
+        const experience = await experienceModel.find({ userDetailsID: user._id });
+        const projects = await projectsModel.find({ userDetailsID: user._id });
+        const skills = await skillsModel.find({ userDetailsID: user._id });
+        const userProfile = await userprofileModel.find({ userDetailsID: user._id });
+        // Create the user object with all the fetched data
+        return {
+          usersWithDetails:
+            user,
+          education,
+          experience,
+          projects,
+          skills,
+          userProfile
+        }
+      }))
+    console.log(usersWithDetails);
+    const educationLevel = job.education.map((e) => e.educationLevel);
+    // console.log(educationLevel);
+    const experience = job.experience;
+    const primarySkills = job.primarySkills;
+    const secondarySkills = job.secondarySkills;
+    const location = job.location;
+    
+    const matchedUsers = usersWithDetails.map((user) => {
+      // console.log(user);
+      const usereducationLevel = user.education.map((e) => e.educationLevel);
+      if (Object.values(usereducationLevel).includes(educationLevel));
+      return
+    });
+    console.log(typeof matchedUsers);
 
+    // Filter users that match the job criteria
 
-// const getallUsers = async function (req, res) {
+    // console.log(matchedUsers);
+    // const matchedUsers = usersWithDetails.filter((user) => {
+    //   const usereducationLevel = user.education.map((e) => e.educationLevel);
+    //   return (
+    //     usereducationLevel.includes(educationLevel) &&
+    //     user.experience.yearsOfExperience >= experience &&
+    //     user.skills.primarySkills.includes(primarySkills) &&
+    //     user.skills.secondarySkills.includes(secondarySkills) &&
+    //     user.userProfile.location === location
+    //   );
+    // });
 
-//   try {
+    // console.log(matchedUsers);
 
-//       const searchJobseeker = await userModel.find({ recruiter: false });
-//       const userDetails = await Promise.all(searchJobseeker.map(async (user) => {
+    // Return job seekers who match search criteria
+    res.status(200).json({status:true,
+      job, matchedUsers
+    });
+  } catch (error) {
+    res.status(500).json({status:false, message: error.message });
+  }
+};
 
-//           const educationDetails = await educationModel.find({ userDetailsID: user._id });
-//           const experienceDetails = await experienceModel.find({ userDetailsID: user._id } );
-//   const skillsDetails = await skillsModel.find({ userDetailsID: user._id } );
-//   const projectDetails = await projectsModel.find({ userDetailsID: user._id } );
-// console.log(educationDetails)
-//           let score = 0
-//           for (let i = 0; i < educationDetails.length; i++) {
-//               if (EducationLevelPoints[educationDetails[i].educationLevel] + AuthorityPoints[educationDetails[i].authority]+ experienceLevelPoints[experienceDetails[i].experienceLevel] > score) {
-//                   score = EducationLevelPoints[educationDetails[i].educationLevel] + AuthorityPoints[educationDetails[i].authority] + experienceLevelPoints[experienceDetails[i].experienceLevel]
-//               }
-
-//           }
-//           return {
-//               userDetails: user,
-//               educationDetails,
-//               experienceDetails,
-//               PoolPoints: score
-//           }
-//             }));
-//             let premiumPool=[],vipPool=[],normalPool=[]
-//             userDetails.map((userD)=>{
-//                 if(userD.PoolPoints>=1700)premiumPool.push(userD)
-//                 else if(userD.PoolPoints>=1000)vipPool.push(userD)
-//                 else normalPool.push(userD)
-//             })
-
-
-//             res.json({premiumPool,vipPool,normalPool});
-
-//             } 
-//             catch (error) {
-//             console.error(error);
-//             res.status(500).json({ msg: error.message });
-//         }
-
-//       }
-//7777777777777777777777777777777777777777777777777777777777777777777777
 const searchJobseekerGeneral = async (req, res) => {
   try {
     const { experience, educationalLevel, discipline, primarySkills } = req.query;
@@ -188,242 +209,61 @@ const searchJobseekerGeneral = async (req, res) => {
   }
 };
 
-//*************************************************************************************************************** ***************************************/Main
-//1
-// async function recruiterSearch(req, res) {
-//   try {
-//     const { primarySkills, secondarySkills, experience, educationLevel } = req.query;
-//     console.log(`Search params: primarySkills=${primarySkills}, secondarySkills=${secondarySkills}, experience=${experience}, educationLevel=${educationLevel}`);
-//     const schema = Joi.object({
-//       primarySkills: Joi.string().allow(''),
-//       secondarySkills: Joi.string().allow(''),
-//       experience: Joi.string().allow(''),
-//       educationLevel: Joi.string().allow(''),
-//     });
-//     const validation = schema.validate(req.query);
-//     if (validation.error) {
-//       return res.status(400).send({ message: validation.error.details[0].message });
-//     }
-
-//     //Construct query based on search criteria
-//     const skillsQuery = {};
-//     if (primarySkills) {
-//       skillsQuery.primarySkills = { $regex: new RegExp(`^${primarySkills}$`, 'i') };
-//     }
-//     if (secondarySkills) {
-//       skillsQuery.secondarySkills = { $regex: new RegExp(`^${secondarySkills}$`, 'i') };
-//     }
-//     const educationQuery = {};
-//     if (educationLevel) {
-//       educationQuery.educationLevel = { $regex: new RegExp(`^${educationLevel}$`, 'i') };
-//     }
-//     const experienceQuery = {};
-//     if (experience) {
-//       experienceQuery.experience = { $in: experience.split(',') };}
-
-//     // Perform search and return results
-//     const users = await userModel.find({ recruiter: false });
-//     const education = await educationModel.find(educationQuery, 'userDetailsID educationLevel collegeName authority discipline yearOfpassout');
-//     const experienceResults = await experienceModel.find(experienceQuery, 'userDetailsID experience');
-//     const skills = await skillsModel.find(skillsQuery, 'userDetailsID primarySkills secondarySkills');
-
-//     // Map results to include all required fields
-//     let results = users.map((user) => {
-//       const userExperience = experienceResults.find(ex => ex.userDetailsID.toString() === user._id.toString()) || {};
-//       const userEducation = education.find(e => e.userDetailsID.toString() === user._id.toString()) || {};
-//       const userSkills = skills.find(s => s.userDetailsID.toString() === user._id.toString()) || {};
-//       let matchCount = 0;
-
-//       if (primarySkills && userSkills.primarySkills && new RegExp(`^${primarySkills}$`, 'i').test(userSkills.primarySkills)) {
-//         matchCount++;
-//       }
-//       if (secondarySkills && userSkills.secondarySkills && new RegExp(`^${secondarySkills}$`, 'i').test(userSkills.secondarySkills)) {
-//         matchCount++;
-//       }
-//       if (experience && userExperience.experience && userExperience.experience.toLowerCase() === experience.toLowerCase()) {
-//         matchCount++;
-//       }
-//       if (educationLevel && userEducation.educationLevel && new RegExp(`^${educationLevel}$`, 'i').test(userEducation.educationLevel)) {
-//         matchCount++;
-//       }
-//       if (matchCount === 0) {
-//         return null;
-
-//       } else {
-//         return {
-//           firstName: user.firstName,
-//           lastName: user.lastName,
-//           email: user.email,
-//           educationLevel: userEducation.educationLevel || '',
-//           collegeName: userEducation.collegeName || '',
-//           authority: userEducation.authority || '',
-//           discipline: userEducation.discipline || '',
-//           yearOfpassout: userEducation.yearOfpassout || '',
-//           experience: userExperience.experience || '',
-//           primarySkills: userSkills.primarySkills || [],
-//           secondarySkills: userSkills.secondarySkills || [],
-//         };
-//       }
-//     });
-//     results = results.filter(result => result !== null);
-//     res.send(results);
-//   } catch (error) {
-
-//     res.status(500).send({ status: true,message: error.message });
-//   }
-// };
-
-//2
-// async function recruiterSearch(req, res) {
-//   try {
-//     const { primarySkills, secondarySkills, experience, educationLevel } = req.query;
-//     console.log(`Search params: primarySkills=${primarySkills}, secondarySkills=${secondarySkills}, experience=${experience}, educationLevel=${educationLevel}`);
-//     const schema = Joi.object({
-//       primarySkills: Joi.string().allow(''),
-//       secondarySkills: Joi.string().allow(''),
-//       experience: Joi.string().allow(''),
-//       educationLevel: Joi.string().allow(''),
-//     });
-//     const validation = schema.validate(req.query);
-//     if (validation.error) {
-//       return res.status(400).send({ message: validation.error.details[0].message });
-//     }
-
-//     //Construct query based on search criteria
-//     const skillsQuery = {};
-//     if (primarySkills) {
-//       skillsQuery.primarySkills = { $regex: new RegExp(`^${primarySkills}$`, 'i') };
-//     }
-//     if (secondarySkills) {
-//       skillsQuery.secondarySkills = { $regex: new RegExp(`^${secondarySkills}$`, 'i') };
-//     }
-//     const educationQuery = {};
-//     if (educationLevel) {
-//       educationQuery.educationLevel = { $regex: new RegExp(`^${educationLevel}$`, 'i') };
-//     }
-//     const experienceQuery = {};
-//     if (experience) {
-//       experienceQuery.experience = experience.split(',')
-//       experienceQuery.experience = {$in : experienceQuery.experience.map(e=>e.trim())}
-//     }
-//     //console.log(experienceQuery.experience);
-//     // Perform search and return results
-//     const users = await userModel.find({ recruiter: false });
-//     const education = await educationModel.find(educationQuery, 'userDetailsID educationLevel collegeName authority discipline yearOfpassout');
-//     const experienceResults = await experienceModel.find(experienceQuery, 'userDetailsID experience');
-//     console.log(experienceResults);
-//     const skills = await skillsModel.find(skillsQuery, 'userDetailsID primarySkills secondarySkills');
-//     // Map results to include all required fields
-//     let result = users.map((user) => {
-//       const userExperience = experienceResults.find(ex => ex.userDetailsID.toString() === user._id.toString()) || {};
-//       //console.log(userExperience);
-//       const userEducation = education.find(e => e.userDetailsID.toString() === user._id.toString()) || {};
-//       //console.log(userEducation);
-//       const userSkills = skills.find(s => s.userDetailsID.toString() === user._id.toString()) || {};
-//       //console.log(userSkills);
-//       let matchCount = 0;
-//       if (primarySkills && userSkills.primarySkills && new RegExp(`^${primarySkills}$`, 'i').test(userSkills.primarySkills)) {
-//         matchCount++;
-//       }
-//       if (secondarySkills && userSkills.secondarySkills && new RegExp(`^${secondarySkills}$`, 'i').test(userSkills.secondarySkills)) {
-//         matchCount++;
-//       }
-//       if (experience && userExperience.experience && userExperience.experience.toLowerCase() === experience.toLowerCase()) {
-//         matchCount++;
-//         console.log(matchCount)
-//       }
-//       if (educationLevel && userEducation.educationLevel && new RegExp(`^${educationLevel}$`, 'i').test(userEducation.educationLevel)) {
-//         matchCount++;
-//       }
-//       if (matchCount === 0) {
-//         return null;
-//       } else {
-//         return {
-//           firstName: user.firstName,
-//           lastName: user.lastName,
-//           email: user.email,
-//           educationLevel: userEducation.educationLevel || '',
-//           collegeName: userEducation.collegeName || '',
-//           authority: userEducation.authority || '',
-//           discipline: userEducation.discipline || '',
-//           yearOfpassout: userEducation.yearOfpassout || '',
-//           experience: userExperience.experience || {},
-//           primarySkills: userSkills.primarySkills || [],
-//           secondarySkills: userSkills.secondarySkills || [],
-//         };
-//       }
-//     }
-//     );
-//     // console.log(result)
-//     result = result.filter(result => result !== null);
-//     res.send(result);
-    
-//   } catch (error) {
-
-//     res.status(500).send({ status: false,message: error.message });
-//   }
-// };
-
-//3 R
 async function recruiterSearch(req, res) {
   try {
-    const { primarySkills, secondarySkills, experience, educationLevel } = req.query;
-    console.log(`Search params: primarySkills=${primarySkills}, secondarySkills=${secondarySkills}, experience=${experience}, educationLevel=${educationLevel}`);
+    const { primarySkills, secondarySkills, experience, educationLevel, location } = req.query;
     const schema = Joi.object({
       primarySkills: Joi.string().allow(''),
       secondarySkills: Joi.string().allow(''),
       experience: Joi.string().allow(''),
       educationLevel: Joi.string().allow(''),
+      location: Joi.string().allow('')
     });
-    const validation = schema.validate(req.query);
+    const validation = schema.validate(req.query, { abortEarly: false });
     if (validation.error) {
-      return res.status(400).send({ message: validation.error.details[0].message });
+      return res.status(400).send({ message: validation.error.details.map(d => d.message) });
     }
-
-    //Construct query based on search criteria
     const skillsQuery = {};
     if (primarySkills) {
-      skillsQuery.primarySkills = { $regex: new RegExp(`^${primarySkills}$`, 'i') };
+      skillsQuery.primarySkills = { $in: primarySkills.split(",").map(s => new RegExp(`^${s.trim()}$`, 'i')) };
     }
     if (secondarySkills) {
-      skillsQuery.secondarySkills = { $regex: new RegExp(`^${secondarySkills}$`, 'i') };
-    }
-    const educationQuery = {};
-    if (educationLevel) {
-      educationQuery.educationLevel = { $regex: new RegExp(`^${educationLevel}$`, 'i') };
-    }
-    // Create an array of experiences
-    const experienceArray = [];
-    if (experience) {
-      const experiences = experience.split(",");
-      for (let i = 0; i < experiences.length; i++) {
-        experienceArray.push(experiences[i].trim());
-      }
+      skillsQuery.secondarySkills = { $in: secondarySkills.split(",").map(s => new RegExp(`^${s.trim()}$`, 'i')) };
     }
 
-    // Perform search and return results
+    const educationQuery = {};
+    if (educationLevel) {
+      educationQuery.educationLevel = { $in: educationLevel.split(",").map(level => new RegExp(`^${level.trim()}$`, 'i')) };
+    }
+    const experienceArray = experience ? experience.split(",").map(s => s.trim()) : [];
+    const userProfileQuery = {};
+    if (location) {
+      userProfileQuery.location = { $in: location.split(",").map(loc => new RegExp(`^${loc.trim()}$`, 'i')) };
+    }
     const users = await userModel.find({ recruiter: false });
     const education = await educationModel.find(educationQuery, 'userDetailsID educationLevel collegeName authority discipline yearOfpassout');
     const experienceResults = await experienceModel.find({}, 'userDetailsID experience');
-    console.log(experienceResults);
     const skills = await skillsModel.find(skillsQuery, 'userDetailsID primarySkills secondarySkills');
-
-    // Map results to include all required fields
-    let result = users.map((user) => {
+    const userProfiles = await userprofileModel.find(userProfileQuery, 'userDetailsID location');
+    const result = users.map((user) => {
       const userExperience = experienceResults.find(ex => ex.userDetailsID.toString() === user._id.toString()) || {};
       const userEducation = education.find(e => e.userDetailsID.toString() === user._id.toString()) || {};
       const userSkills = skills.find(s => s.userDetailsID.toString() === user._id.toString()) || {};
+      const userProfile = userProfiles.find(p => p.userDetailsID.toString() === user._id.toString()) || {};
       let matchCount = 0;
-      if (primarySkills && userSkills.primarySkills && new RegExp(`^${primarySkills}$`, 'i').test(userSkills.primarySkills)) {
+      if (primarySkills && userSkills.primarySkills && userSkills.primarySkills.some(s => primarySkills.split(",").map(p => p.trim()).includes(s))) {
         matchCount++;
       }
-      if (secondarySkills && userSkills.secondarySkills && new RegExp(`^${secondarySkills}$`, 'i').test(userSkills.secondarySkills)) {
+      if (secondarySkills && userSkills.secondarySkills && userSkills.secondarySkills.some(s => secondarySkills.split(",").map(p => p.trim()).includes(s))) {
         matchCount++;
       }
       if (experienceArray.length > 0 && userExperience.experience && experienceArray.includes(userExperience.experience)) {
         matchCount++;
       }
-      if (educationLevel && userEducation.educationLevel && new RegExp(`^${educationLevel}$`, 'i').test(userEducation.educationLevel)) {
+      if (educationLevel && userEducation.educationLevel && educationLevel.split(",").map(level => new RegExp(`^${level.trim()}$`, 'i')).some(regex => regex.test(userEducation.educationLevel))) {
+        matchCount++;
+      }
+      if (location && userProfile.location && location.split(",").map(loc => new RegExp(`^${loc.trim()}$`, 'i')).some(regex => regex.test(userProfile.location))) {
         matchCount++;
       }
       if (matchCount === 0) {
@@ -436,28 +276,21 @@ async function recruiterSearch(req, res) {
           educationLevel: userEducation.educationLevel || '',
           collegeName: userEducation.collegeName || '',
           authority: userEducation.authority || '',
-          discipline:userEducation.discipline || '',
+          discipline: userEducation.discipline || '',
           yearOfpassout: userEducation.yearOfpassout || '',
           experience: userExperience.experience || {},
-          primarySkills: userSkills.primarySkills || [],
-          secondarySkills: userSkills.secondarySkills || [],
+          primarySkills: userSkills.primarySkills || '',
+          secondarySkills: userSkills.secondarySkills || '',
+          location: userProfile.location || ''
         };
       }
-    }
-    );
-    // console.log(result)
-    result = result.filter(result => result !== null);
+    }).filter(result => result !== null);
     res.send(result);
-    
   } catch (error) {
-
-    res.status(500).send({ status: false,message: error.message });
+    res.status(500).send({ status: false, message: error.message });
   }
 };
 
-
-
-//***********************************************************8888888888888888888888888888888888888888888 */
 const recruiterInformation = async function (req, res) {
   try {
     const id = req.params.id;
@@ -468,206 +301,6 @@ const recruiterInformation = async function (req, res) {
     res.status(500).json({ status: false, message: err.message });
   }
 }
-
-//*8888888888888888888888888888888888888888888888888888888
-
-//based on Talentpool
-// const searchjobseekers = async function (req, res){
-//   try {
-
-//     const allUsers = await userModel.find({ recruiter: false }).select({ firstName: 1, lastName: 1, email: 1 });
-//     const userDetails = await Promise.all(allUsers.map(async (user) => {
-
-//       const educationDetails = await educationModel.find({ userDetailsID: user._id }).select({ userDetailsID: 1, educationLevel: 1, authority: 1, discipline: 1 });
-//       const experienceDetails = await experienceModel.find({ userDetailsID: user._id });
-//       // const skillsDetails = await skillsModel.find({ userDetailsID: user._id } );
-//       // const projectDetails = await projectsModel.find({ userDetailsID: user._id } );
-//       // // console.log(educationDetails)
-
-//       let score = 0
-//       for (let i = 0; i < educationDetails.length; i++) {
-//         if (EducationLevelPoints[educationDetails[i].educationLevel] + AuthorityPoints[educationDetails[i].authority] > score) {
-//           score = EducationLevelPoints[educationDetails[i].educationLevel] + AuthorityPoints[educationDetails[i].authority]
-//         }
-//       }
-
-//       return {
-
-//         userDetails: user,
-//         educationDetails,
-//         PoolPoints: score,
-//         experienceDetails,
-//         //   skillsDetails,
-//         //   projectDetails
-//       }
-
-//     }));
-
-//     //   Creation of pools
-//     let premiumPool = [], vipPool = [], normalPool = []
-//     userDetails.map((userD) => {
-//       if (userD.PoolPoints >= 1700) premiumPool.push(userD)
-//       else if (userD.PoolPoints >= 1000) vipPool.push(userD)
-//       else normalPool.push(userD)
-//     })
-
-//     //   Count the score of the jobpost created by recruiter   and refined the users acc to jobscore
-//     const id = req.params.id                  //  get recruiter id from path
-//     const jobposts = await jobModel.find({ userDetailsID: id })
-
-//     let jobpostscore = 0; let jobPostinfo = [];
-
-//     for (let i = 0; i < jobposts.length; i++) {
-//       jobpostscore = 0;
-//       for (let j = 0; j < jobposts[i].education.length; j++) {
-
-//         jobpostscore = jobpostscore + EducationLevelPoints[jobposts[i].education[j].educationLevel] +
-//           AuthorityPoints[jobposts[i].education[j].authority]
-
-
-//         // console.log(jobpostscore)
-//       }
-//       let jobscoreavg = (jobposts[i].education.length)
-//       // console.log("jobscoreavg -", jobscoreavg)
-//       // console.log(jobpostscore)
-//       jobpostscore = jobpostscore / jobscoreavg
-//       jobPostinfo.push({ jobId: jobposts[i]._id, jobpoints: jobpostscore })
-//     }
-
-//     jobPostinfo.map((jpoints) => {
-//       let refinedcandidates = []; // move this line inside the map function to avoid reusing old values
-
-//       // Add refined candidates to the array
-//       if (jpoints.jobpoints >= 1700) {
-//         premiumPool.map((premiumCandidate) => {
-//           if (premiumCandidate.PoolPoints >= jpoints.jobpoints) {
-//             refinedcandidates.push(premiumCandidate);
-//           }
-//         });
-//       } else if (jpoints.jobpoints < 1700 && jpoints.jobpoints >= 1000) {
-//         vipPool.map((vipCandidate) => {
-//           if (vipCandidate.PoolPoints >= jpoints.jobpoints) {
-//             refinedcandidates.push(vipCandidate);
-//           }
-//         });
-//       } else if (jpoints.jobpoints < 1000) {
-//         normalPool.map((normalCandidate) => {
-//           if (normalCandidate.PoolPoints >= jpoints.jobpoints) {
-//             refinedcandidates.push(normalCandidate);
-//           }
-//         });
-//       }
-
-//       // Filter refined candidates based on education and experience requirements
-//       jpoints.refinedcandidates = refinedcandidates.filter((candidate) => {
-//         for (let i = 0; i < jobposts.length; i++) {
-//           let educationRequirementMet = false;
-//           let experienceRequirementMet = false;
-
-//           // Check if candidate meets education requirement
-//           for (let j = 0; j < jobposts[i].education.length; j++) {
-//             const educationLevelPoints = EducationLevelPoints[jobposts[i].education[j].educationLevel];
-//             const authorityPoints = AuthorityPoints[jobposts[i].education[j].authority];
-//             const jobpostscore = educationLevelPoints + authorityPoints;
-
-//             if (jobpostscore <= candidate.PoolPoints) {
-//               educationRequirementMet = true;
-//               break;
-//             }
-//           }
-
-//           // Check if candidate meets experience requirement
-//           if (candidate.yearsOfExperience >= jobposts[i].experience) {
-//             experienceRequirementMet = true;
-//           }
-
-//           // If both requirements are met, keep the candidate
-//           if (educationRequirementMet && experienceRequirementMet) {
-//             return true;
-//           }
-//         }
-
-//         // If none of the job posts requirements are met, filter out the candidate
-//         return false;
-//       });
-//     });
-//   
-
-
-// const searchjobseekers = async function (req, res) {
-
-//   try {
-
-//     const allUsers = await userModel.find({ recruiter: false }).select({firstName:1 ,lastName:1,email:1});
-//     const userDetails = await Promise.all(allUsers.map(async (user) => {
-
-//       const educationDetails = await educationModel.find({ userDetailsID: user._id }).select({userDetailsID:1,educationLevel:1,authority:1,discipline:1});
-//       const experienceDetails = await experienceModel.find({ userDetailsID: user._id } );
-//       // const skillsDetails = await skillsModel.find({ userDetailsID: user._id } );
-//       // const projectDetails = await projectsModel.find({ userDetailsID: user._id } );
-//       // // console.log(educationDetails)
-
-//       let score = 0
-//       for (let i = 0; i < educationDetails.length; i++) {
-//         if (EducationLevelPoints[educationDetails[i].educationLevel] + AuthorityPoints[educationDetails[i].authority] > score) {
-//           score = EducationLevelPoints[educationDetails[i].educationLevel] + AuthorityPoints[educationDetails[i].authority]
-//         }
-//       }
-
-//       return {
-
-//         userDetails: user,
-//         educationDetails,
-//         PoolPoints: score,
-//         experienceDetails,
-//         //   skillsDetails,
-//         //   projectDetails
-//       }
-
-//     }));
-
-//     //   Creation of pools
-//     let premiumPool = [], vipPool = [], normalPool = []
-//     userDetails.map((userD) => {
-//       if (userD.PoolPoints >= 1700) premiumPool.push(userD)
-//       else if (userD.PoolPoints >= 1000) vipPool.push(userD)
-//       else normalPool.push(userD)
-//     })
-
-//     //   Count the score of the jobpost created by recruiter
-//     let jobPost = await jobModel.findById(req.params.id);
-//     let jobScore = 0;
-//     jobScore += jobPost.jobTitlePoints + jobPost.jobDescriptionPoints + jobPost.skillsRequiredPoints + jobPost.experienceRequiredPoints + jobPost.educationRequiredPoints;
-//     // console.log(jobScore)
-
-//     // Refining the users according to job score
-//     let refinedUsers = [];
-//     if (jobScore >= 1700) refinedUsers = [...premiumPool]
-//     else if (jobScore >= 1000) refinedUsers = [...vipPool, ...normalPool]
-//     else refinedUsers = [...normalPool]
-
-//     // Filtering out the refined users who do not meet the experience requirement
-//     let usersFilteredByExperience = refinedUsers.filter((user) => {
-//       let experienceSum = 0;
-//       for (let i = 0; i < user.experienceDetails.length; i++) {
-//         experienceSum += user.experienceDetails[i].durationMonths;
-//       }
-//       return experienceSum >= jobPost.experienceRequired
-//     });
-
-//     res.status(200).json({
-//       success: true,
-//       message: "Search successful",
-//       data: usersFilteredByExperience
-//     });
-
-//   } catch (error) {
-//   res.status(500).send({ status: false, message: err.message })
-// }
-// }
-
-
-
 
 const searchjobseekers = async function (req, res) {
 
@@ -713,14 +346,7 @@ const searchjobseekers = async function (req, res) {
       else normalPool.push(userD)
     })
 
-    //   Count the score of the jobpost created by recruiter   and refined the users acc to jobscore
-
-
-
     // Count the score of the job post created by recruiter and refine the users according to job score
-
-
-
 
     const jobId = req.params.id;
     const jobPost = await jobModel.findById(jobId);
@@ -822,4 +448,4 @@ const searchjobseekers = async function (req, res) {
   }
 }
 
-module.exports = { recruiterInformation, recruiterInfo, updateRecruiterData, searchjobseekers, recruiterSearch, searchJobseekerGeneral };
+module.exports = { recruiterInformation, recruiterInfo, updateRecruiterData, searchjobseekers, recruiterSearch, searchJobseekerGeneral, jobSearch };

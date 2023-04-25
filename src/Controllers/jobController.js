@@ -1,4 +1,6 @@
 const jobModel = require("../Models/jobModel");
+const RecruiterModel = require("../Models/recruiterModel");
+
 const Joi = require('joi');
 
 const jobInfo = async (req, res) =>{
@@ -35,7 +37,6 @@ const jobInfo = async (req, res) =>{
   }
 };
 
-// **********************************************************************************************************
 const updateJobData = async function(req, res){
   try {
       const jobSchema = Joi.object({
@@ -90,7 +91,6 @@ const updateJobData = async function(req, res){
   return res.status(500).send({ status: false, message: err.message })
 }
 }
-//88888888888888888888888888888888888888888888888888888888888888888888888888888
 
 const searchJobs = async (req, res) => {
   try {
@@ -148,16 +148,38 @@ const searchJobs = async (req, res) => {
     }
 
 
-    const jobs = await jobModel.find({ $or: [ query ] });
+    const jobs = await jobModel.find({ $or: [ query ] })
+      .populate({
+        path: 'userDetailsID',
+        select: 'fullName email phoneNumber'
+      });
+
     if (jobs.length === 0) {
       return res.status(404).json({ status: false, message: "No jobs found" });
     }
-    return res.status(200).json({ status: true, data: jobs });
+    
+    const formattedJobs = jobs.map(job => ({
+      jobRole: job.jobRole,
+      experience: job.experience,
+      primarySkills: job.primarySkills,
+      secondarySkills: job.secondarySkills,
+      jobDescription: job.jobDescription,
+      education: job.education,
+      company: job.company,
+      location: job.location,
+      discipline: job.discipline,
+      fullName: job.userDetailsID.fullName,
+      email: job.userDetailsID.email,
+      phoneNumber: job.userDetailsID.phoneNumber
+    }));
+    
+    return res.status(200).json({ status: true, data: formattedJobs });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ status: false, message: error.message });
   }
 };
+
 const jobpostbyRecruiter = async function(req, res) {
   try {
     const id = req.params.id;

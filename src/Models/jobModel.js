@@ -6,7 +6,7 @@ const jobSchema = new mongoose.Schema(
   {
     userDetailsID:{
       type: ObjectId,
-      ref: "recruiter"
+      ref: "Recruiters"
     },
     jobRole: {
       type: String,
@@ -64,12 +64,4 @@ const jobSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-
-                                                                                                            
-                                                                                                            
-                                                                                                            
-                                                                                                            
-                                                                                                            
-                                                                                                            
-                                                                                                            
-                                 module.exports = mongoose.model("Job", jobSchema);
+module.exports = mongoose.model("Job", jobSchema);
