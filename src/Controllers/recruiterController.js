@@ -12,6 +12,7 @@ const Joi = require('joi');
 const skillsModel = require("../Models/InfoModels/skillsModel");
 const projectsModel = require("../Models/InfoModels/projectsModel");
 
+
 const recruiterInfo = async function (req, res) {
   try {
     const recruiterSchema = Joi.object({
@@ -346,7 +347,14 @@ const searchjobseekers = async function (req, res) {
       else normalPool.push(userD)
     })
 
+    //   Count the score of the jobpost created by recruiter   and refined the users acc to jobscore
+
+
+
     // Count the score of the job post created by recruiter and refine the users according to job score
+
+
+
 
     const jobId = req.params.id;
     const jobPost = await jobModel.findById(jobId);

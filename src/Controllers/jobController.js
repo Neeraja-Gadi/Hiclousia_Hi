@@ -37,6 +37,7 @@ const jobInfo = async (req, res) =>{
   }
 };
 
+
 const updateJobData = async function(req, res){
   try {
       const jobSchema = Joi.object({
