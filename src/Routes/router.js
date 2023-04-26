@@ -45,8 +45,8 @@ router.get("/jobpostbyRecruiter/:id",jobController.jobpostbyRecruiter);
 router.get("/job",jobController.searchJobs); //general job search for user or jobseeker
 router.get("/allusers",recruiterController.recruiterSearch);
 router.get("/allrecruiter",recruiterController.searchJobseekerGeneral);// general recruiter search for candidate
-router.get("/allusers/:id",recruiterController.searchjobseekers) //pool based serach for Recruiter
-
+router.get("/allusers/:id",recruiterController.searchjobseekers); //pool based serach for Recruiter
+router.get("/jobsearch/:id",recruiterController.jobSearch);
 
 
 

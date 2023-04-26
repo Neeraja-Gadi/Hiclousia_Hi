@@ -20,7 +20,7 @@ app.use("/msg" , (req,res)=>{
 })
 // DATABASE CONNECTION
 
-mongoose.connect('mongodb+srv://Neeraja:Hiclousia@123@cluster0.koj69cg.mongodb.net/?retryWrites=true&w=majority',
+mongoose.connect(process.env.DATABASE,
     
 { useNewUrlParser: true,
   useUnifiedTopology: true,

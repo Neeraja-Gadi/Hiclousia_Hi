@@ -1,14 +1,12 @@
 const educationModel = require("../Models/InfoModels/educationModel.js");
 const experienceModel = require("../Models/InfoModels/experienceModel.js");
 const projectsModel = require("../Models/InfoModels/projectsModel.js");
-
+const userprofileModel = require("../Models/userprofileModel");
 const skillsModel = require("../Models/InfoModels/skillsModel.js")
 const userModel = require("../Models/userModel.js")
-
+const Joi = require('joi');
 const { AuthorityPoints, EducationLevelPoints, ExperienceLevelPoints } = require("../Constrains/authority.js");
 
-
-const Joi = require('joi');
 const educationInfo = async function (req, res) {
     try {     
 
@@ -37,7 +35,6 @@ const educationInfo = async function (req, res) {
     }
 };
 
-// *************************************************************
 const updateEducationData = async function (req, res) {
     try {
         
@@ -74,11 +71,7 @@ const updateEducationData = async function (req, res) {
     } catch (err) {
         return res.status(500).send({ status: false, message: err.message })
     }
-}
-
-/**
-*****************************************************************/
-
+};
 
 const experienceInfo = async function (req, res) {
     try {
@@ -147,9 +140,7 @@ const updateExperienceData = async function (req, res) {
     } catch (err) {
         return res.status(500).send({ status: false, message: err.message })
     }
-}
-
-/**********************************************************/
+};
 
 const projectInfo = async function (req, res) {
     try {
@@ -174,9 +165,7 @@ const projectInfo = async function (req, res) {
     } catch (err) {
         res.status(500).send({ status: false, message: err.message })
     }
-}
-
-/*********************************************************/
+};
 
 const skillsInfo = async function (req, res) {
     try {
@@ -196,41 +185,54 @@ const skillsInfo = async function (req, res) {
     } catch (err) {
         res.status(500).send({ status: false, message: err.message })
     }
-}
-// **********************************************************************************
+};
+
 const updateSkillsData = async function (req, res) {
-    try {
-        const skillsSchema = Joi.object({
-            userDetailsID: Joi.string(),
-            primarySkills: Joi.array().items(Joi.string()) , 
-            secondarySkills: Joi.string()
-        });
-        const validationResult = skillsSchema.validate(req.body, { abortEarly: false });
-        if (validationResult.error) {
-            return res.status(400).send({ status: false, message: validationResult.error.details[0].message });
-        };
-
-        const id = req.params.id;  
-        let skillData = {};
-        skillData = await skillsModel.findById({ _id: id });
-        if (!skillData) {
-            return res.status(404).send({ status: false, message: 'Skill data not found' });
-        }
-        // if (req.method === 'PUT') {
-       
-        skillData.primarySkills = req.body.primarySkills;
-        skillData.secondarySkills = req.body.secondarySkills;
-
-        const updatedData = await skillsModel.findByIdAndUpdate({ _id: id }, skillData, { new: true });
-        return res.status(200).send({ status: true, data: updatedData, message: 'Skill data updated' });
-        // 
-    } catch (err) {
-        return res.status(500).send({ status: false, message: err.message })
+  try {
+    const skillsSchema = Joi.object({
+      userDetailsID: Joi.string(),
+      primarySkills: Joi.array().items(Joi.string()),
+      secondarySkills: Joi.array().items(Joi.string()),
+    });
+    const validationResult = skillsSchema.validate(req.body, { abortEarly: false });
+    if (validationResult.error) {
+      return res
+        .status(400)
+        .send({ status: false, message: validationResult.error.details[0].message });
     }
-}
 
-/**
-888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888**/
+    const userID = req.params.id;
+    let skillData = await skillsModel.findOne({ userDetailsID: userID});
+    if (!skillData) {
+      return res.status(404).send({ status: false, message: "Skill data not found" });
+    }
+
+    if (req.body.primarySkills) {
+      req.body.primarySkills.forEach((skill) => {
+        if (!skillData.primarySkills.includes(skill)) {
+          skillData.primarySkills.push(skill);
+        }
+      });
+    }
+
+    if (req.body.secondarySkills) {
+      req.body.secondarySkills.forEach((skill) => {
+        if (!skillData.secondarySkills.includes(skill)) {
+          skillData.secondarySkills.push(skill);
+        }
+      });
+    }
+
+    const updatedData = await skillsModel.findByIdAndUpdate(
+      { _id: skillData._id },
+      skillData,
+      { new: true }
+    );
+    return res.status(200).send({ status: true, data: updatedData, message: "Skill data updated" });
+  } catch (err) {
+    return res.status(500).send({ status: false, message: err.message });
+  }
+};
 
 const personalInfo = async function (req, res) {
     try {
@@ -241,15 +243,15 @@ const personalInfo = async function (req, res) {
         const educationData = await educationModel.find({ userDetailsID: id })
         const experienceData = await experienceModel.find({ userDetailsID: id })
         const skills = await skillsModel.find({ userDetailsID: id })
+        const userprofile = await userprofileModel.find({ userDetailsID: id })
 
-        const data = { user, educationData, experienceData, skills }
+        const data = { user, educationData, experienceData, skills, userprofile }
         return res.status(200).send({ status: true, data: data })
 
     } catch (err) {
         res.status(500).send({ status: false, message: err.message })
     }
 }
-
 
 // GET education data by user ID
 const educationInformation = async function(req, res) {
@@ -262,7 +264,7 @@ const educationInformation = async function(req, res) {
     {
         res.status(500).json({ status: false, message: err.message });
     }
-}
+};
 const experienceInformation = async function(req, res) {
     try {
         const id = req.params.id;
@@ -272,7 +274,7 @@ const experienceInformation = async function(req, res) {
     catch (err) {
         res.status(500).json({ status: false, message: err.message });
     }
-}
+};
 const projectInformation = async function(req, res) {
     try {
         const id = req.params.id;
@@ -282,7 +284,7 @@ const projectInformation = async function(req, res) {
     catch (err) {
         res.status(500).json({ status: false, message: err.message });
     }
-}
+};
 const skillsInformation = async function(req, res) {
     try {
         const id = req.params.id;
@@ -292,9 +294,6 @@ const skillsInformation = async function(req, res) {
     catch (err) {
         res.status(500).json({ status: false, message: err.message });
     }
-}
-
-
-
+};
 
 module.exports = {projectInformation, skillsInformation, experienceInformation, educationInformation, educationInfo, updateEducationData, experienceInfo, updateExperienceData, projectInfo, skillsInfo, updateSkillsData, personalInfo };

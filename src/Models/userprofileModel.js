@@ -15,7 +15,7 @@ const userprofileSchema = new mongoose.Schema(
       type: String,
       required: true
     },
-    profileImage: {
+    profileLink: {
       type: String,
       required: true,
     },
@@ -31,6 +31,10 @@ const userprofileSchema = new mongoose.Schema(
     phone: {
       type:String,
       required: true,
+    },
+    location: {
+      type:String,
+      required: true
     },
     // document:{
     //   type: String,
